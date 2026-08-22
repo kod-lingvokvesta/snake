@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>KOD_LINGVOKVESTA Console - Sage Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sage-translucent: rgba(152, 183, 140, 0.35);
+    --sage-dark: rgba(106, 142, 96, 0.6);
+    --sage-glow: rgba(152, 183, 140, 0.5);
+    --lcd-green: #9BBC0F;
+    --lcd-dark: #0F380F;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #08090c;
+    font-family: 'VT323', monospace;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Стили для плавающих огней (Боке) */
+  .bokeh {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+  .b1 { width: 400px; height: 400px; background: #98b78c; top: -100px; left: -100px; animation: float1 15s infinite ease-in-out; }
+  .b2 { width: 350px; height: 350px; background: #9bbc0f; bottom: -50px; right: -50px; animation: float2 12s infinite ease-in-out; }
+  .b3 { width: 250px; height: 250px; background: #f1c40f; top: 40%; right: 20%; animation: float1 18s infinite ease-in-out reverse; }
+
+  @keyframes float1 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(40px, 30px); } }
+  @keyframes float2 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-30px, -40px); } }
+
+  .scene {
+    perspective: 1000px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .console {
+    width: 680px;
+    height: 680px; /* Увеличили высоту под большие кнопки */
+    background: linear-gradient(135deg, 
+      rgba(192, 213, 178, 0.4) 0%, 
+      rgba(152, 183, 140, 0.3) 50%,
+      rgba(176, 196, 162, 0.35) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 24px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 
+      inset 0 2px 3px rgba(255, 255, 255, 0.5),
+      inset 0 -2px 3px rgba(0, 0, 0, 0.15),
+      0 20px 50px rgba(106, 142, 96, 0.4),
+      0 0 60px var(--sage-glow);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 32px 30px;
+    position: relative;
+    transform: rotateX(5deg);
+  }
+
+  .top-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .screen-bezel {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 
+      inset 0 3px 8px rgba(0, 0, 0, 0.9),
+      0 2px 0 rgba(255, 255, 255, 0.2);
+    width: 440px; 
+    height: 330px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .screen-lcd {
+    width: 100%;
+    height: 100%;
+    background: var(--lcd-green);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  #canvas {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    position: relative;
+    z-index: 1;
+  }
+
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(15, 56, 15, 0.1) 2px,
+      rgba(15, 56, 15, 0.1) 4px
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .screen-lcd::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.15) 0%, transparent 65%);
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .bottom-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .controls-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    position: relative;
+    margin-top: 20px;
+  }
+
+  /* Увеличенный D-Pad */
+  .dpad {
+    position: relative;
+    width: 180px;
+    height: 180px;
+  }
+
+  .d-btn {
+    position: absolute;
+    width: 56px; /* Увеличили */
+    height: 56px; /* Увеличили */
+    background-color: transparent;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.1s;
+  }
+
+  .d-btn.pressed, .d-btn:active {
+    filter: brightness(0.6);
+    transform: scale(0.9);
+  }
+
+  .d-up { top: 0; left: 62px; background-image: url('up_button.png'); }
+  .d-left { top: 62px; left: 0; background-image: url('left_button.png'); }
+  .d-right { top: 62px; left: 124px; background-image: url('right_button.png'); }
+  .d-down { top: 124px; left: 62px; background-image: url('down_button.png'); }
+
+  /* Увеличенные кнопки A и B */
+  .ab-group {
+    display: flex;
+    gap: 36px;
+    align-items: center;
+    transform: rotate(-12deg);
+    margin-top: 8px;
+  }
+
+  .ab-btn {
+    width: 80px; /* Увеличили */
+    height: 80px; /* Увеличили */
+    border-radius: 50%;
+    background-color: transparent;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.1s;
+  }
+
+  .ab-btn.pressed, .ab-btn:active {
+    filter: brightness(0.6);
+    transform: scale(0.9);
+  }
+
+  .btn-a { background-image: url('a_button.png'); }
+  .btn-b { background-image: url('b_button.png'); }
+
+  /* Увеличенные SELECT и START */
+  .ss-group {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .ss-btn {
+    width: 120px; /* Увеличили */
+    height: 48px; /* Увеличили */
+    background-color: transparent;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: transform 0.1s, filter 0.1s;
+  }
+
+  .ss-btn.pressed, .ss-btn:active {
+    filter: brightness(0.6);
+    transform: scale(0.9);
+  }
+
+  .btn-select { background-image: url('select_button.png'); }
+  .btn-start { background-image: url('start_button.png'); }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 8px;
+    margin-top: 16px;
+  }
+
+  .footer-text {
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 1px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .battery {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .battery-icon {
+    width: 36px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 3px;
+    padding: 2px;
+    position: relative;
+  }
+
+  .battery-icon::after {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 4px;
+    width: 3px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 0 1px 1px 0;
+  }
+
+  .battery-fill {
+    width: 75%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="bokeh b1"></div>
+<div class="bokeh b2"></div>
+<div class="bokeh b3"></div>
+
+<div class="scene">
+  <div class="console">
+    
+    <div class="top-section">
+      <div class="screen-bezel">
+        <div class="screen-lcd">
+          <canvas id="canvas" width="440" height="330"></canvas>
+          <div class="scanlines"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-section">
+      <div class="controls-wrapper">
+        <div class="dpad">
+          <button class="d-btn d-up" data-key="up"></button>
+          <button class="d-btn d-left" data-key="left"></button>
+          <button class="d-btn d-right" data-key="right"></button>
+          <button class="d-btn d-down" data-key="down"></button>
+        </div>
+
+        <div class="ab-group">
+          <button class="ab-btn btn-b" data-key="b"></button>
+          <button class="ab-btn btn-a" data-key="a"></button>
+        </div>
+      </div>
+
+      <div class="ss-group">
+        <button class="ss-btn btn-select" data-key="select"></button>
+        <button class="ss-btn btn-start" data-key="start"></button>
+      </div>
+
+      <div class="footer">
+        <span class="footer-text">KOD_LINGVOKVESTA OS 1.0</span>
+        <div class="battery">
+          <div class="battery-icon">
+            <div class="battery-fill"></div>
+          </div>
+        </div>
+        <span class="footer-text" id="soundToggle">SOUND: ON</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ═══════════════════════════════════════════════
+   CONSTANTS & LAYOUT
+   ═══════════════════════════════════════════════ */
+const W=440,H=330,CELL=22;
+const GRID_COLS=18,GRID_ROWS=10;
+const GRID_X=22,GRID_Y=90;
+const MOVE_BASE=280;
+const QUESTIONS_PER_LEVEL=8;
+
+/* LCD Colors matching the CSS */
+const C_LCD_BG='#9BBC0F';
+const C_LCD_DARK='#0F380F';
+
+/* ═══════════════════════════════════════════════
+   SENTENCE DATA
+   ═══════════════════════════════════════════════ */
+const SENTENCES={
+  1:[
+    {text:"I ___ a student.",answer:"AM",full:"I am a student.",pronoun:"I"},
+    {text:"You ___ my friend.",answer:"ARE",full:"You are my friend.",pronoun:"YOU"},
+    {text:"He ___ from London.",answer:"IS",full:"He is from London.",pronoun:"HE"},
+    {text:"She ___ a teacher.",answer:"IS",full:"She is a teacher.",pronoun:"SHE"},
+    {text:"It ___ cold today.",answer:"IS",full:"It is cold today.",pronoun:"IT"},
+    {text:"We ___ at school.",answer:"ARE",full:"We are at school.",pronoun:"WE"},
+    {text:"They ___ from Brazil.",answer:"ARE",full:"They are from Brazil.",pronoun:"THEY"},
+    {text:"I ___ very tired.",answer:"AM",full:"I am very tired.",pronoun:"I"},
+    {text:"She ___ 20 years old.",answer:"IS",full:"She is 20 years old.",pronoun:"SHE"},
+    {text:"They ___ very happy.",answer:"ARE",full:"They are very happy.",pronoun:"THEY"},
+  ],
+  2:[
+    {text:"We ___ ready for the trip.",answer:"ARE",full:"We are ready for the trip.",pronoun:"WE"},
+    {text:"He ___ at home right now.",answer:"IS",full:"He is at home right now.",pronoun:"HE"},
+    {text:"She ___ at the library.",answer:"IS",full:"She is at the library.",pronoun:"SHE"},
+    {text:"They ___ from Canada.",answer:"ARE",full:"They are from Canada.",pronoun:"THEY"},
+    {text:"It ___ very small and light.",answer:"IS",full:"It is very small and light.",pronoun:"IT"},
+    {text:"You ___ late again today.",answer:"ARE",full:"You are late again today.",pronoun:"YOU"},
+    {text:"I ___ here to help you.",answer:"AM",full:"I am here to help you.",pronoun:"I"},
+    {text:"The dog ___ in the garden.",answer:"IS",full:"The dog is in the garden.",pronoun:"IT"},
+    {text:"We ___ in the same class.",answer:"ARE",full:"We are in the same class.",pronoun:"WE"},
+    {text:"He ___ my best friend.",answer:"IS",full:"He is my best friend.",pronoun:"HE"},
+  ],
+  3:[
+    {text:"My friends ___ at the airport.",answer:"ARE",full:"My friends are at the airport.",pronoun:"THEY"},
+    {text:"She ___ not at home today.",answer:"IS",full:"She is not at home today.",pronoun:"SHE"},
+    {text:"We ___ excited about the project.",answer:"ARE",full:"We are excited about the project.",pronoun:"WE"},
+    {text:"The children ___ in the park.",answer:"ARE",full:"The children are in the park.",pronoun:"THEY"},
+    {text:"My brother and I ___ good at math.",answer:"ARE",full:"My brother and I are good at math.",pronoun:"WE"},
+    {text:"The weather ___ terrible today.",answer:"IS",full:"The weather is terrible today.",pronoun:"IT"},
+    {text:"These books ___ very interesting.",answer:"ARE",full:"These books are very interesting.",pronoun:"THEY"},
+    {text:"Everyone ___ ready to start.",answer:"IS",full:"Everyone is ready to start.",pronoun:"EVERYONE"},
+    {text:"My sister ___ a doctor in London.",answer:"IS",full:"My sister is a doctor in London.",pronoun:"SHE"},
+    {text:"The students ___ in the classroom.",answer:"ARE",full:"The students are in the classroom.",pronoun:"THEY"},
+  ]
+};
+
+/* ═══════════════════════════════════════════════
+   STORAGE MODULE
+   ═══════════════════════════════════════════════ */
+const Storage={
+  get(k,d){try{const v=localStorage.getItem('kod_lingvokvesta_sage_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('kod_lingvokvesta_sage_'+k,JSON.stringify(v))}catch(e){}}
+};
+
+/* ═══════════════════════════════════════════════
+   SOUND MODULE
+   ═══════════════════════════════════════════════ */
+const Sound={
+  ctx:null,enabled:true,
+  init(){
+    this.enabled=Storage.get('sound',true);
+    this.updateLabel();
+  },
+  updateLabel(){
+    const el=document.getElementById('soundToggle');
+    if(el) el.textContent='SOUND: '+(this.enabled?'ON':'OFF');
+  },
+  ensure(){
+    if(!this.ctx){try{this.ctx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){this.ctx=null}}
+    if(this.ctx&&this.ctx.state==='suspended')this.ctx.resume();
+  },
+  toggle(){
+    this.enabled=!this.enabled;
+    Storage.set('sound',this.enabled);
+    this.updateLabel();
+    if(this.enabled)this.play('click');
+  },
+  play(type){
+    if(!this.enabled)return;
+    this.ensure();
+    if(!this.ctx)return;
+    const ctx=this.ctx,now=ctx.currentTime;
+    const beep=(f,s,d,t='square',v=.05)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=f;o.type=t;
+      g.gain.setValueAtTime(v,now+s);
+      g.gain.exponentialRampToValueAtTime(.001,now+s+d);
+      o.start(now+s);o.stop(now+s+d+.02);
+    };
+    switch(type){
+      case'click':beep(800,0,.04);break;
+      case'move':beep(520,0,.03,'square',.03);break;
+      case'eat':beep(700,0,.05);beep(900,.03,.04);break;
+      case'correct':beep(523,0,.08);beep(659,.08,.08);beep(784,.16,.12);break;
+      case'wrong':beep(330,0,.1,'sawtooth',.06);beep(220,.1,.18,'sawtooth',.06);break;
+      case'gameOver':beep(440,0,.15);beep(349,.15,.15);beep(261,.3,.15);beep(174,.45,.4);break;
+      case'levelUp':beep(523,0,.08);beep(659,.08,.08);beep(784,.16,.08);beep(1047,.24,.22);break;
+      case'caseComplete':[523,659,784,1047,784,1047,1319].forEach((f,i)=>beep(f,i*.1,.14));break;
+    }
+  }
+};
+
+/* ═══════════════════════════════════════════════
+   INPUT MANAGER
+   ═══════════════════════════════════════════════ */
+const Input={
+  handlers:{},
+  init(){
+    const keymap={'ArrowUp':'up','ArrowDown':'down','ArrowLeft':'left','ArrowRight':'right',
+      'z':'a','Z':'a','x':'b','X':'b','Enter':'start','Shift':'select',' ':'start'};
+    document.addEventListener('keydown',e=>{
+      const a=keymap[e.key];
+      if(a){e.preventDefault();this.trigger(a);}
+    });
+    document.querySelectorAll('[data-key]').forEach(btn=>{
+      const k=btn.dataset.key;
+      const down=e=>{e.preventDefault();btn.classList.add('pressed');this.trigger(k);};
+      const up=e=>{e.preventDefault();btn.classList.remove('pressed');};
+      btn.addEventListener('pointerdown',down);
+      btn.addEventListener('pointerup',up);
+      btn.addEventListener('pointerleave',up);
+      btn.addEventListener('pointercancel',up);
+      btn.addEventListener('contextmenu',e=>e.preventDefault());
+    });
+    document.getElementById('soundToggle').addEventListener('click',()=>Sound.toggle());
+  },
+  on(a,cb){(this.handlers[a]||(this.handlers[a]=[])).push(cb)},
+  trigger(a){
+    Sound.ensure();
+    if(this.handlers[a])this.handlers[a].forEach(cb=>cb());
+  }
+};
+
+/* ═══════════════════════════════════════════════
+   GAME STATE
+   ═══════════════════════════════════════════════ */
+const S={
+  screen:'BOOT',bootTime:0,
+  menuIndex:0,gameIndex:0,levelIndex:0,
+  unlockedLevels:1,highScore:0,
+  level:1,score:0,lives:3,caseNum:1,correctCount:0,
+  questions:[],questionIdx:0,currentQuestion:null,
+  snake:[],dir:{x:1,y:0},nextDir:{x:1,y:0},
+  food:[],lastMove:0,moveInterval:MOVE_BASE,
+  timer:0,maxTimer:22000,
+  fbTime:0,fbData:null,
+};
+
+/* ═══════════════════════════════════════════════
+   CANVAS HELPERS & RETRO UI
+   ═══════════════════════════════════════════════ */
+const cv=document.getElementById('canvas');
+const ctx=cv.getContext('2d');
+ctx.imageSmoothingEnabled=false;
+
+function clearScreen(){ctx.fillStyle=C_LCD_BG;ctx.fillRect(0,0,W,H)}
+function txt(t,x,y,c,s,a){
+  ctx.fillStyle=c||C_LCD_DARK;
+  ctx.font=`${s||14}px "Press Start 2P", "Courier New", monospace`;
+  ctx.textAlign=a||'left';ctx.textBaseline='top';
+  ctx.fillText(t,x,y);
+}
+function txtC(t,y,c,s){txt(t,W/2,y,c,s,'center')}
+function ptxt(t,x,y,c,s){
+  ctx.font=`${s}px "Press Start 2P", "Courier New", monospace`;
+  ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillText(t,x+2,y+2);
+  ctx.fillStyle=c;ctx.fillText(t,x,y);
+}
+function ptxtC(t,y,c,s){
+  ctx.font=`${s}px "Press Start 2P", "Courier New", monospace`;
+  ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillText(t,W/2+2,y+2);
+  ctx.fillStyle=c;ctx.fillText(t,W/2,y);
+}
+
+/* Динамический текст, который уменьшается, если не помещается */
+function drawDynamicText(t, y, c, baseSize) {
+  let fs = baseSize;
+  ctx.font=`${fs}px "Press Start 2P", "Courier New", monospace`;
+  let tw = ctx.measureText(t).width;
+  
+  while(tw > W - 40 && fs > 8) {
+    fs--;
+    ctx.font=`${fs}px "Press Start 2P", "Courier New", monospace`;
+    tw = ctx.measureText(t).width;
+  }
+  
+  ctx.textAlign='center';ctx.textBaseline='top';
+  ctx.fillStyle='rgba(0,0,0,0.2)';ctx.fillText(t, W/2+2, y+2);
+  ctx.fillStyle=c;ctx.fillText(t, W/2, y);
+}
+
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function drawPixelBlock(x,y,w,h){
+  ctx.fillStyle=C_LCD_DARK;
+  ctx.fillRect(x,y,w,h);
+  ctx.fillStyle=C_LCD_BG;
+  ctx.fillRect(x+2,y+2,w-4,h-4);
+  ctx.fillStyle=C_LCD_DARK;
+  ctx.fillRect(x+4,y+3,w-8,h-6);
+}
+
+/* ═══════════════════════════════════════════════
+   SNAKE GAME MODULE
+   ═══════════════════════════════════════════════ */
+const Snake={
+  init(level){
+    S.level=level;S.score=0;S.lives=3;S.caseNum=1;S.correctCount=0;
+    S.questions=this.pickQ(level);S.questionIdx=0;
+    S.moveInterval=MOVE_BASE-(level-1)*20;
+    this.startQ();
+  },
+  pickQ(level){
+    const p=[...SENTENCES[level]];
+    for(let i=p.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[p[i],p[j]]=[p[j],p[i]]}
+    return p.slice(0,QUESTIONS_PER_LEVEL);
+  },
+  startQ(){
+    S.currentQuestion=S.questions[S.questionIdx];
+    const sx=Math.floor(GRID_COLS/2)-1,sy=Math.floor(GRID_ROWS/2);
+    S.snake=[{x:sx,y:sy},{x:sx-1,y:sy},{x:sx-2,y:sy}];
+    S.dir={x:1,y:0};S.nextDir={x:1,y:0};
+    this.spawnFood();
+    S.timer=S.maxTimer;S.screen='QUESTION_INTRO';S.fbTime=0;
+  },
+  spawnFood(){
+    const correctWord = S.currentQuestion.answer;
+    const wrongWords = ['AM', 'IS', 'ARE'].filter(w => w !== correctWord);
+    let words = [correctWord, wrongWords[0], wrongWords[1]];
+
+    for(let i=words.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [words[i],words[j]]=[words[j],words[i]];
+    }
+    
+    const occ=new Set();
+    S.snake.forEach(s=>occ.add(s.x+','+s.y));
+    
+    const validPositions = [];
+    for(let y=0; y<GRID_ROWS; y++){
+      for(let x=0; x<GRID_COLS-1; x++){
+        if(occ.has(x+','+y) || occ.has((x+1)+','+y)) continue;
+        validPositions.push({x,y});
+      }
+    }
+    
+    for(let i=validPositions.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [validPositions[i],validPositions[j]]=[validPositions[j],validPositions[i]];
+    }
+    
+    const pos=[];
+    for(const p of validPositions){
+      if(pos.length>=3) break;
+      let overlap=false;
+      for(const sp of pos){
+        if(sp.y===p.y && Math.abs(sp.x-p.x)<=1){overlap=true;break}
+      }
+      if(!overlap) pos.push(p);
+    }
+    
+    if(pos.length<3){
+      for(const p of validPositions){
+        if(pos.length>=3) break;
+        let exists=false;
+        for(const sp of pos){ if(sp.x===p.x && sp.y===p.y){exists=true;break} }
+        if(!exists) pos.push(p);
+      }
+    }
+
+    while(pos.length<3){
+      const rx = Math.floor(Math.random()*(GRID_COLS-1));
+      const ry = Math.floor(Math.random()*GRID_ROWS);
+      let exists=false;
+      for(const sp of pos){ if(sp.x===rx && sp.y===ry){exists=true;break} }
+      if(!exists) pos.push({x:rx, y:ry});
+    }
+    
+    S.food = pos.map((p,i) => ({
+      x: p.x, y: p.y, word: words[i], isCorrect: words[i] === S.currentQuestion.answer
+    }));
+  },
+  setDir(dx,dy){
+    if(S.dir.x===-dx&&S.dir.y===-dy)return;
+    if(S.dir.x===dx&&S.dir.y===dy)return;
+    S.nextDir={x:dx,y:dy};
+  },
+  update(ts){
+    if(S.screen!=='PLAYING')return;
+    if(ts-S.lastMove>=S.moveInterval){
+      S.dir=S.nextDir;
+      const h=S.snake[0];
+      const nh={x:(h.x+S.dir.x+GRID_COLS)%GRID_COLS,y:(h.y+S.dir.y+GRID_ROWS)%GRID_ROWS};
+      
+      for(let i=1; i<S.snake.length; i++){
+        if(S.snake[i].x===nh.x && S.snake[i].y===nh.y){
+          this.handleWrong(null);
+          return;
+        }
+      }
+      
+      let eaten=null;
+      for(const f of S.food){
+        if(nh.y===f.y&&(nh.x===f.x||nh.x===f.x+1)){eaten=f;break}
+      }
+      S.snake.unshift(nh);
+      if(eaten){Sound.play('eat');this.checkAnswer(eaten)}
+      else S.snake.pop();
+      S.lastMove=ts;
+    }
+    S.timer-=16;
+    if(S.timer<=0)this.handleWrong(null);
+  },
+  checkAnswer(f){
+    S.food=S.food.filter(x=>x!==f);
+    if(f.isCorrect)this.handleCorrect();
+    else this.handleWrong(f);
+  },
+  handleCorrect(){
+    S.score+=100;S.correctCount++;S.caseNum++;
+    Sound.play('correct');
+    S.screen='CORRECT';S.fbTime=0;S.fbData={score:100};
+  },
+  handleWrong(f){
+    S.lives--;S.caseNum++;
+    Sound.play('wrong');
+    S.screen='WRONG';S.fbTime=0;
+    const q=S.currentQuestion;
+    S.fbData={chosen:f?f.word:'---',correct:q.answer,pronoun:q.pronoun,full:q.full,timeout:!f};
+  },
+  nextQ(){
+    S.questionIdx++;S.caseNum++;
+    if(S.questionIdx>=S.questions.length){
+      const nl=S.level+1;
+      if(nl<=3){
+        if(nl>S.unlockedLevels){S.unlockedLevels=nl;Storage.set('unlockedLevels',nl)}
+        Sound.play('levelUp');
+        S.level=nl;S.questions=this.pickQ(nl);S.questionIdx=0;
+        S.moveInterval=MOVE_BASE-(nl-1)*20;
+        S.screen='LEVEL_INTRO';S.fbTime=0;
+      }else{
+        Sound.play('caseComplete');
+        if(S.score>S.highScore){S.highScore=S.score;Storage.set('highScore',S.score)}
+        S.screen='CASE_COMPLETE';S.fbTime=0;
+      }
+    }else this.startQ();
+  },
+
+  drawHUD(){
+    ptxt('SCORE:'+String(S.score).padStart(4,'0'),22,15,C_LCD_DARK,12);
+    let lv='';
+    for(let i=0;i<3;i++)lv+=i<S.lives?'♥ ':'♡ ';
+    ptxt(lv,200,15,C_LCD_DARK,12);
+    ptxt('LVL:'+S.caseNum,W-100,15,C_LCD_DARK,12);
+  },
+  drawSentence(){
+    const q=S.currentQuestion;if(!q)return;
+    drawDynamicText(q.text, 45, C_LCD_DARK, 14);
+  },
+  drawGrid(){
+    ctx.strokeStyle=C_LCD_DARK;ctx.lineWidth=2;
+    ctx.strokeRect(GRID_X-2, GRID_Y-2, GRID_COLS*CELL+4, GRID_ROWS*CELL+4);
+  },
+  drawFood(){
+    for(const f of S.food){
+      const x=GRID_X+f.x*CELL,y=GRID_Y+f.y*CELL,w=CELL*2,h=CELL;
+      drawPixelBlock(x+1,y+1,w-2,h-2);
+      ctx.fillStyle=C_LCD_BG;
+      ctx.font='12px "Press Start 2P", "Courier New", monospace';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(f.word || '?',x+w/2,y+h/2+1);
+    }
+  },
+  drawSnake(){
+    for(let i=0;i<S.snake.length;i++){
+      const seg=S.snake[i];
+      const x=GRID_X+seg.x*CELL,y=GRID_Y+seg.y*CELL;
+      
+      if(i===0){
+        ctx.fillStyle=C_LCD_DARK;
+        ctx.fillRect(x+1,y+1,CELL-2,CELL-2);
+        ctx.fillStyle=C_LCD_BG;
+        const dx=S.dir.x,dy=S.dir.y;
+        if(dx!==0){
+          ctx.fillRect(x+(dx>0?15:4),y+5,4,4);
+          ctx.fillRect(x+(dx>0?15:4),y+12,4,4);
+        }else{
+          ctx.fillRect(x+5,y+(dy>0?15:4),4,4);
+          ctx.fillRect(x+12,y+(dy>0?15:4),4,4);
+        }
+      }else{
+        ctx.fillStyle=C_LCD_DARK;
+        ctx.fillRect(x+2,y+2,CELL-4,CELL-4);
+        ctx.fillStyle=C_LCD_BG;
+        ctx.fillRect(x+4,y+4,CELL-8,CELL-8);
+      }
+    }
+  },
+  drawTimer(){
+    const pct=Math.max(0,S.timer/S.maxTimer);
+    const bw=W-44,bh=5,bx=22,by=315;
+    ctx.fillStyle=C_LCD_DARK;ctx.fillRect(bx-1,by-1,bw+2,bh+2);
+    ctx.fillStyle=C_LCD_BG;ctx.fillRect(bx,by,bw,bh);
+    ctx.fillStyle=C_LCD_DARK;ctx.fillRect(bx,by,bw*pct,bh);
+  },
+  draw(){
+    clearScreen();
+    this.drawHUD();
+    this.drawSentence();
+    this.drawGrid();
+    this.drawFood();
+    this.drawSnake();
+    this.drawTimer();
+  },
+  drawCorrect(){
+    clearScreen();
+    this.drawHUD();
+    this.drawTimer();
+    
+    const t=S.fbTime, q=S.currentQuestion;
+    drawDynamicText(q.text, 80, C_LCD_DARK, 14);
+    ptxtC('CORRECT!',120,C_LCD_DARK,20);
+    ptxtC('+100',170,C_LCD_DARK,16);
+    drawDynamicText(q.full, 210, C_LCD_DARK, 12);
+  },
+  drawWrong(){
+    clearScreen();
+    this.drawHUD();
+    this.drawTimer();
+    
+    const t=S.fbTime, fd=S.fbData, q=S.currentQuestion;
+    drawDynamicText(q.text, 80, C_LCD_DARK, 14);
+    
+    const title=fd.timeout?'TIME UP!':'WRONG!';
+    ptxtC(title,120,C_LCD_DARK,20);
+    
+    ptxtC(fd.pronoun+' -> '+fd.correct,170,C_LCD_DARK,14);
+    drawDynamicText(fd.full, 210, C_LCD_DARK, 12);
+    
+    if(t>1600){
+      if(S.lives>0){
+        if(Math.floor(t/400)%2===0)ptxtC('NEXT SENTENCE',250,C_LCD_DARK,10);
+      }else{
+        if(Math.floor(t/400)%2===0)ptxtC('NO LIVES LEFT',250,C_LCD_DARK,10);
+      }
+    }
+  },
+  drawLevelIntro(){
+    clearScreen();
+    const t=S.fbTime;
+    if(t<1200)ptxtC('LEVEL '+S.level,H/2-20,C_LCD_DARK,20);
+    else{
+      ptxtC('LEVEL '+S.level,H/2-20,C_LCD_DARK,20);
+      if(t>1400)ptxtC(['','EASY','NORMAL','HARD'][S.level],H/2+15,C_LCD_DARK,14);
+    }
+    if(t>2200){S.screen='QUESTION_INTRO';S.fbTime=0}
+  },
+  drawQuestionIntro(){
+    this.draw();
+    const t=S.fbTime;
+    ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fillRect(GRID_X,GRID_Y,GRID_COLS*CELL,GRID_ROWS*CELL);
+    if(t<1000){
+      ptxtC('GET READY!',H/2-10,C_LCD_BG,14);
+    }else if(t<1400){
+      ptxtC('GO!',H/2-15,C_LCD_BG,24);
+    }else{
+      S.screen='PLAYING';S.lastMove=performance.now();S.timer=S.maxTimer;
+    }
+  },
+};
+
+/* ═══════════════════════════════════════════════
+   MENU SYSTEM
+   ═══════════════════════════════════════════════ */
+const Menu={
+  items:['START GAME','MINI GAMES','HOW TO PLAY'],
+  games:[
+    {name:'AM/IS/ARE SNAKE',locked:false,id:'snake'},
+    {name:'WORD RUSH',locked:true},
+    {name:'GLITCH FIX',locked:true},
+  ],
+  levels:[
+    {name:'LEVEL 1',sub:'EASY',level:1},
+    {name:'LEVEL 2',sub:'NORMAL',level:2},
+    {name:'LEVEL 3',sub:'HARD',level:3},
+  ],
+  draw(){
+    clearScreen();
+    ptxtC('KOD_LINGVOKVESTA',55,C_LCD_DARK,16);
+    ptxtC('AM / IS / ARE',90,C_LCD_DARK,10);
+    
+    const sy=140,sp=40;
+    for(let i=0;i<this.items.length;i++){
+      const y=sy+i*sp,sel=i===S.menuIndex;
+      if(sel){
+          ctx.fillStyle='rgba(0,0,0,0.15)';
+          roundRect(40,y-5,W-80,32,4);ctx.fill();
+      }
+      ptxt(this.items[i],55,y,sel?C_LCD_DARK:'rgba(15,56,15,0.5)',14);
+      if(sel)ptxt('>',W-55,y,C_LCD_DARK,14);
+    }
+    
+    txt('SOUND: '+(Sound.enabled?'ON':'OFF'),12,H-20,'rgba(15,56,15,0.6)',10);
+    if(S.highScore>0)txt('HI: '+S.highScore,W-110,H-20,C_LCD_DARK,10);
+  },
+  drawMiniGames(){
+    clearScreen();
+    ptxtC('MINI GAMES',55,C_LCD_DARK,16);
+    const sy=110,sp=40;
+    for(let i=0;i<this.games.length;i++){
+      const y=sy+i*sp,sel=i===S.gameIndex,g=this.games[i];
+      if(sel){
+        ctx.fillStyle='rgba(0,0,0,0.15)';
+        roundRect(40,y-5,W-80,32,4);ctx.fill();
+      }
+      ptxt(g.name,55,y,g.locked?'rgba(15,56,15,0.3)':(sel?C_LCD_DARK:'rgba(15,56,15,0.7)'),12);
+      if(g.locked)ptxt('LCK',W-55,y,'rgba(15,56,15,0.5)',12);
+      else if(sel)ptxt('>',W-55,y,C_LCD_DARK,12);
+    }
+    txt('A: SELECT  B: BACK',12,H-20,'rgba(15,56,15,0.6)',10);
+  },
+  drawHowTo(){
+    clearScreen();
+    ptxtC('HOW TO PLAY',55,C_LCD_DARK,14);
+    const lines=[
+      '','EAT THE CORRECT WORD','TO FILL THE BLANK.','',
+      'SHE ___ A STUDENT.','ANSWER: IS','',
+      'AM  -> I','IS  -> HE/SHE/IT','ARE -> YOU/WE/THEY','',
+      'WRONG = -1 LIFE','3 LIVES TOTAL','',
+      'B: BACK',
+    ];
+    for(let i=0;i<lines.length;i++){
+      const y=95+i*14;if(y<H-10)txt(lines[i],W/2,y,C_LCD_DARK,9,'center');
+    }
+  },
+  drawLevelSelect(){
+    clearScreen();
+    ptxtC('SELECT LEVEL',55,C_LCD_DARK,14);
+    const sy=110,sp=45;
+    for(let i=0;i<this.levels.length;i++){
+      const y=sy+i*sp,sel=i===S.levelIndex,lv=this.levels[i];
+      const locked=(i+1)>S.unlockedLevels;
+      if(sel&&!locked){
+        ctx.fillStyle='rgba(0,0,0,0.15)';
+        roundRect(40,y-5,W-80,32,4);ctx.fill();
+      }
+      let t=lv.name+' - '+lv.sub;
+      ptxt(t,55,y,locked?'rgba(15,56,15,0.3)':(sel?C_LCD_DARK:'rgba(15,56,15,0.7)'),14);
+      if(locked)ptxt('LCK',W-55,y,'rgba(15,56,15,0.5)',12);
+      else if(sel)ptxt('>',W-55,y,C_LCD_DARK,14);
+    }
+    txt('A: START  B: BACK',12,H-20,'rgba(15,56,15,0.6)',10);
+  },
+};
+
+/* ═══════════════════════════════════════════════
+   BOOT / TITLE / GAME OVER / CASE COMPLETE
+   ═══════════════════════════════════════════════ */
+function drawBoot(){
+  clearScreen();
+  const t=S.bootTime;
+  if(t<2000){
+    ptxtC('KOD_LINGVOKVESTA',110,C_LCD_DARK,12);
+    const d=Math.floor(t/400)%4;
+    txt('LOADING'+'.'.repeat(d),W/2,145,'rgba(15,56,15,0.5)',10,'center');
+  }else{
+    ptxtC('KOD_LINGVOKVESTA',100,C_LCD_DARK,14);
+    ptxtC('AM / IS / ARE',140,C_LCD_DARK,10);
+    if(Math.floor(t/500)%2===0)ptxtC('PRESS START',180,C_LCD_DARK,10);
+  }
+}
+
+function drawPaused(){
+  Snake.draw();
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(0,0,W,H);
+  ptxtC('PAUSED',120,C_LCD_BG,16);
+  if(Math.floor(performance.now()/500)%2===0)ptxtC('PRESS START',150,C_LCD_BG,10);
+}
+
+function drawGameOver(){
+  clearScreen();
+  ptxtC('GAME OVER',80,C_LCD_DARK,18);
+  const t=S.fbTime;
+  if(t>300)ptxtC('SCORE: '+S.score,130,C_LCD_DARK,12);
+  if(t>600)ptxtC('CORRECT: '+S.correctCount,160,C_LCD_DARK,10);
+  if(t>900){
+    if(S.score>=S.highScore&&S.score>0)ptxtC('NEW HIGH SCORE!',190,C_LCD_DARK,10);
+    else txt('HIGH: '+S.highScore,W/2,190,'rgba(15,56,15,0.5)',9,'center');
+  }
+  if(t>1600&&Math.floor(t/500)%2===0)ptxtC('PRESS START',H-30,C_LCD_DARK,10);
+}
+
+function drawCaseComplete(){
+  clearScreen();
+  const t=S.fbTime;
+  
+  ctx.strokeStyle=C_LCD_DARK;ctx.lineWidth=2;
+  roundRect(50,70,W-100,180,6);ctx.stroke();
+  
+  if(t>200)ptxtC('CASE SOLVED',100,C_LCD_DARK,14);
+  if(t>500)ptxtC('PERFECT!',135,C_LCD_DARK,12);
+  if(t>800)ptxtC('SCORE: '+S.score,165,C_LCD_DARK,14);
+  if(t>1200)ptxtC('CORRECT: '+S.correctCount+'/24',195,C_LCD_DARK,10);
+  if(t>2000&&Math.floor(t/500)%2===0)ptxtC('PRESS START',H-30,C_LCD_DARK,10);
+}
+
+/* ═══════════════════════════════════════════════
+   MAIN DRAW & UPDATE
+   ═══════════════════════════════════════════════ */
+function draw(){
+  switch(S.screen){
+    case'BOOT':drawBoot();break;
+    case'MENU':Menu.draw();break;
+    case'MINI_GAMES':Menu.drawMiniGames();break;
+    case'HOW_TO':Menu.drawHowTo();break;
+    case'LEVEL_SELECT':Menu.drawLevelSelect();break;
+    case'LEVEL_INTRO':Snake.drawLevelIntro();break;
+    case'QUESTION_INTRO':Snake.drawQuestionIntro();break;
+    case'PLAYING':Snake.draw();break;
+    case'PAUSED':drawPaused();break;
+    case'CORRECT':Snake.drawCorrect();break;
+    case'WRONG':Snake.drawWrong();break;
+    case'GAME_OVER':drawGameOver();break;
+    case'CASE_COMPLETE':drawCaseComplete();break;
+  }
+}
+
+function update(ts){
+  if(S.screen==='BOOT')S.bootTime+=16;
+  if(S.screen==='PLAYING')Snake.update(ts);
+  const fbScreens=['CORRECT','WRONG','LEVEL_INTRO','QUESTION_INTRO','GAME_OVER','CASE_COMPLETE'];
+  if(fbScreens.includes(S.screen))S.fbTime+=16;
+
+  if(S.screen==='CORRECT'&&S.fbTime>1800)Snake.nextQ();
+  if(S.screen==='WRONG'){
+    if(S.lives<=0&&S.fbTime>2800){
+      Sound.play('gameOver');
+      S.screen='GAME_OVER';S.fbTime=0;
+    }else if(S.lives>0&&S.fbTime>3200){
+      Snake.nextQ();
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   INPUT HANDLERS
+   ═══════════════════════════════════════════════ */
+function setupInput(){
+  Input.on('up',()=>{
+    Sound.play('move');
+    if(S.screen==='MENU')S.menuIndex=(S.menuIndex-1+Menu.items.length)%Menu.items.length;
+    else if(S.screen==='MINI_GAMES')S.gameIndex=(S.gameIndex-1+Menu.games.length)%Menu.games.length;
+    else if(S.screen==='LEVEL_SELECT'){
+      if(S.levelIndex>0)S.levelIndex--;
+    }else if(S.screen==='PLAYING')Snake.setDir(0,-1);
+  });
+  Input.on('down',()=>{
+    Sound.play('move');
+    if(S.screen==='MENU')S.menuIndex=(S.menuIndex+1)%Menu.items.length;
+    else if(S.screen==='MINI_GAMES')S.gameIndex=(S.gameIndex+1)%Menu.games.length;
+    else if(S.screen==='LEVEL_SELECT'){
+      const n=S.levelIndex+1;
+      if(n<Menu.levels.length&&(n+1)<=S.unlockedLevels)S.levelIndex=n;
+    }else if(S.screen==='PLAYING')Snake.setDir(0,1);
+  });
+  Input.on('left',()=>{
+    if(S.screen==='PLAYING'){Sound.play('move');Snake.setDir(-1,0)}
+  });
+  Input.on('right',()=>{
+    if(S.screen==='PLAYING'){Sound.play('move');Snake.setDir(1,0)}
+  });
+  Input.on('a',()=>{
+    Sound.play('click');
+    if(S.screen==='BOOT'&&S.bootTime>2000){S.screen='MENU';return}
+    if(S.screen==='MENU'){
+      if(S.menuIndex===0){S.screen='LEVEL_SELECT';S.levelIndex=0}
+      else if(S.menuIndex===1){S.screen='MINI_GAMES';S.gameIndex=0}
+      else if(S.menuIndex===2)S.screen='HOW_TO';
+    }else if(S.screen==='MINI_GAMES'){
+      const g=Menu.games[S.gameIndex];
+      if(!g.locked&&g.id==='snake'){S.screen='LEVEL_SELECT';S.levelIndex=0}
+    }else if(S.screen==='LEVEL_SELECT'){
+      if((S.levelIndex+1)<=S.unlockedLevels){
+        Snake.init(Menu.levels[S.levelIndex].level);
+        S.screen='LEVEL_INTRO';S.fbTime=0;
+      }
+    }
+  });
+  Input.on('b',()=>{
+    Sound.play('click');
+    if(['MINI_GAMES','HOW_TO','LEVEL_SELECT'].includes(S.screen))S.screen='MENU';
+  });
+  Input.on('start',()=>{
+    Sound.play('click');
+    if(S.screen==='BOOT'&&S.bootTime>2000){S.screen='MENU';return}
+    if(S.screen==='MENU'){S.screen='LEVEL_SELECT';S.levelIndex=0;return}
+    if(S.screen==='LEVEL_SELECT'){
+      if((S.levelIndex+1)<=S.unlockedLevels){
+        Snake.init(Menu.levels[S.levelIndex].level);
+        S.screen='LEVEL_INTRO';S.fbTime=0;
+      }return;
+    }
+    if(S.screen==='PLAYING'){S.screen='PAUSED';return}
+    if(S.screen==='PAUSED'){S.screen='PLAYING';S.lastMove=performance.now();return}
+    if(S.screen==='GAME_OVER'&&S.fbTime>1600){S.screen='MENU';return}
+    if(S.screen==='CASE_COMPLETE'&&S.fbTime>2000){S.screen='MENU';return}
+  });
+  Input.on('select',()=>{
+    Sound.play('click');
+    Sound.toggle();
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════ */
+function init(){
+  S.unlockedLevels=Storage.get('unlockedLevels',1);
+  S.highScore=Storage.get('highScore',0);
+  Sound.init();
+  Input.init();
+  setupInput();
+  requestAnimationFrame(loop);
+}
+
+function loop(ts){update(ts);draw();requestAnimationFrame(loop)}
+
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+else init();
+</script>
+
+</body>
+</html>
