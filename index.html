@@ -56,7 +56,7 @@
 
   .console {
     width: 680px;
-    height: 680px; /* Высота для десктопа */
+    height: 680px;
     background: linear-gradient(135deg, 
       rgba(192, 213, 178, 0.4) 0%, 
       rgba(152, 183, 140, 0.3) 50%,
@@ -155,7 +155,6 @@
     margin-top: 20px;
   }
 
-  /* D-Pad */
   .dpad {
     position: relative;
     width: 180px;
@@ -186,7 +185,6 @@
   .d-right { top: 62px; left: 124px; background-image: url('right_button.png'); }
   .d-down { top: 124px; left: 62px; background-image: url('down_button.png'); }
 
-  /* A/B Buttons */
   .ab-group {
     display: flex;
     gap: 36px;
@@ -216,7 +214,6 @@
   .btn-a { background-image: url('a_button.png'); }
   .btn-b { background-image: url('b_button.png'); }
 
-  /* SELECT / START Buttons */
   .ss-group {
     display: flex;
     gap: 30px;
@@ -246,7 +243,6 @@
   .btn-select { background-image: url('select_button.png'); }
   .btn-start { background-image: url('start_button.png'); }
 
-  /* Footer */
   .footer {
     display: flex;
     justify-content: space-between;
@@ -301,7 +297,6 @@
      МОБИЛЬНАЯ АДАПТАЦИЯ (Телефоны)
      ═══════════════════════════════════════════════ */
   @media (max-width: 768px) {
-    .bokeh { display: none; } /* Убираем боке для производительности */
     .scene { perspective: none; }
     .console {
       width: 100vw;
@@ -312,8 +307,10 @@
       border: none;
       padding: 10px 15px 20px;
       box-shadow: none;
-      backdrop-filter: none;
-      background: #121414; /* Тёмный фон для мобилки */
+      /* Полупрозрачный фон, чтобы боке просвечивало */
+      background: rgba(12, 14, 20, 0.75); 
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       transform: none;
       display: flex;
       flex-direction: column;
@@ -323,6 +320,7 @@
     .top-section {
       margin-bottom: 10px;
       flex-shrink: 0;
+      margin-top: 10px;
     }
     
     .screen-bezel {
@@ -331,6 +329,7 @@
       aspect-ratio: 4/3;
       max-height: 50vh;
       padding: 8px;
+      margin: 0 auto;
     }
     
     .bottom-section {
@@ -344,6 +343,7 @@
       justify-content: space-between;
       padding: 0 5px;
       margin-top: 0;
+      align-items: center;
     }
     
     .dpad {
@@ -376,7 +376,7 @@
     }
     
     .ss-group {
-      margin-top: 20px;
+      margin-top: 25px;
       gap: 20px;
     }
     
@@ -387,7 +387,7 @@
     }
     
     .footer {
-      display: none; /* Прячем футер на мобилке, чтобы освободить место для кнопок */
+      display: none; /* Прячем футер для экономии места */
     }
   }
 </style>
