@@ -464,145 +464,161 @@
   /* ========== MOBILE ADAPTATION ========== */
    /* ========== MOBILE ========== */
     /* ========== MOBILE ========== */
+  /* ========== MOBILE ========== */
   @media (max-width: 760px) {
     :root { --console-scale: 0.85; }
   }
 
   @media (max-width: 620px) {
-    :root { --console-scale: 0.76; }
+    :root { --console-scale: 0.78; }
   }
 
   @media (max-width: 520px) {
-    :root { --console-scale: 0.68; }
+    :root { --console-scale: 0.70; }
 
     .console {
-      padding: 16px 14px 18px;
-      border-radius: 26px;
+      padding: 14px 12px 16px;
+      border-radius: 24px;
     }
 
     .screen-bezel {
-      width: 400px;
-      height: 290px;
-      padding: 12px;
+      width: 390px;
+      height: 280px;
+      padding: 11px;
     }
 
     .controls-wrapper {
       justify-content: center;
-      gap: 36px;               /* расстояние между D-Pad и A/B */
+      gap: 28px;
       padding: 0;
-      margin-top: 14px;
+      margin-top: 12px;
     }
 
-    /* D-Pad */
+    /* Крупный D-Pad */
     .dpad {
-      width: 162px;
-      height: 162px;
+      width: 178px;
+      height: 178px;
       flex-shrink: 0;
     }
 
     .d-btn {
-      width: 54px;
-      height: 54px;
-      border-radius: 14px;
+      width: 62px;          /* ← увеличил */
+      height: 62px;         /* ← увеличил */
+      border-radius: 16px;
     }
 
-    .d-up    { top: 0;    left: 54px; }
-    .d-left  { top: 54px; left: 0; }
-    .d-right { top: 54px; left: 108px; }
-    .d-down  { top: 108px; left: 54px; }
+    .d-up    { top: 0;     left: 58px; }
+    .d-left  { top: 58px;  left: 0; }
+    .d-right { top: 58px;  left: 116px; }
+    .d-down  { top: 116px; left: 58px; }
 
     /* Крупные стрелки */
     .d-up::after {
-      border-width: 0 11px 15px 11px;
+      border-width: 0 12px 16px 12px;
     }
     .d-left::after {
-      border-width: 11px 15px 11px 0;
+      border-width: 12px 16px 12px 0;
     }
     .d-right::after {
-      border-width: 11px 0 11px 15px;
+      border-width: 12px 0 12px 16px;
     }
     .d-down::after {
-      border-width: 15px 11px 0 11px;
+      border-width: 16px 12px 0 12px;
     }
 
     /* A / B */
     .ab-group {
-      gap: 16px;
+      gap: 14px;
       transform: rotate(-8deg);
       margin-top: 0;
       flex-shrink: 0;
     }
 
     .ab-btn {
-      width: 74px;
-      height: 74px;
+      width: 76px;
+      height: 76px;
       font-size: 17px;
     }
 
     /* Select / Start */
     .ss-group {
-      gap: 20px;
-      margin-top: 16px;
+      gap: 18px;
+      margin-top: 14px;
     }
 
     .ss-btn {
-      width: 116px;
-      height: 46px;
+      width: 118px;
+      height: 48px;
       font-size: 9px;
-      border-radius: 23px;
+      border-radius: 24px;
     }
 
     .footer-text {
-      font-size: 14px;
+      font-size: 13px;
       letter-spacing: 1px;
     }
   }
 
   @media (max-width: 420px) {
-    :root { --console-scale: 0.60; }
-
-    .controls-wrapper {
-      gap: 28px;
-    }
-
-    .dpad {
-      width: 152px;
-      height: 152px;
-    }
-
-    .d-btn {
-      width: 52px;
-      height: 52px;
-    }
-
-    .d-up    { left: 50px; }
-    .d-left  { top: 50px; }
-    .d-right { top: 50px; left: 100px; }
-    .d-down  { top: 100px; left: 50px; }
-
-    .d-up::after    { border-width: 0 10px 14px 10px; }
-    .d-left::after  { border-width: 10px 14px 10px 0; }
-    .d-right::after { border-width: 10px 0 10px 14px; }
-    .d-down::after  { border-width: 14px 10px 0 10px; }
-
-    .ab-btn {
-      width: 70px;
-      height: 70px;
-      font-size: 16px;
-    }
-
-    .ss-btn {
-      width: 110px;
-      height: 44px;
-    }
-  }
-
-  @media (max-width: 360px) {
-    :root { --console-scale: 0.54; }
+    :root { --console-scale: 0.62; }
 
     .controls-wrapper {
       gap: 22px;
     }
+
+    .dpad {
+      width: 168px;
+      height: 168px;
+    }
+
+    .d-btn {
+      width: 58px;
+      height: 58px;
+    }
+
+    .d-up    { left: 55px; }
+    .d-left  { top: 55px; }
+    .d-right { top: 55px; left: 110px; }
+    .d-down  { top: 110px; left: 55px; }
+
+    .d-up::after    { border-width: 0 11px 15px 11px; }
+    .d-left::after  { border-width: 11px 15px 11px 0; }
+    .d-right::after { border-width: 11px 0 11px 15px; }
+    .d-down::after  { border-width: 15px 11px 0 11px; }
+
+    .ab-btn {
+      width: 72px;
+      height: 72px;
+      font-size: 16px;
+    }
+
+    .ss-btn {
+      width: 112px;
+      height: 46px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    :root { --console-scale: 0.56; }
+
+    .controls-wrapper {
+      gap: 18px;
+    }
+
+    .dpad {
+      width: 158px;
+      height: 158px;
+    }
+
+    .d-btn {
+      width: 54px;
+      height: 54px;
+    }
+
+    .d-up    { left: 52px; }
+    .d-left  { top: 52px; }
+    .d-right { top: 52px; left: 104px; }
+    .d-down  { top: 104px; left: 52px; }
   }
 
   /* Landscape */
