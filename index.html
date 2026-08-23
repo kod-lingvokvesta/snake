@@ -462,74 +462,74 @@
   }
 
   /* ========== MOBILE ADAPTATION ========== */
+   /* ========== MOBILE ========== */
   @media (max-width: 760px) {
-    :root {
-      --console-scale: 0.82;
-    }
+    :root { --console-scale: 0.85; }
   }
 
   @media (max-width: 620px) {
-    :root {
-      --console-scale: 0.72;
-    }
+    :root { --console-scale: 0.76; }
   }
 
   @media (max-width: 520px) {
-    :root {
-      --console-scale: 0.62;
-    }
+    :root { --console-scale: 0.68; }
 
     .console {
-      padding: 20px 24px 24px;
-      border-radius: 28px;
+      padding: 16px 18px 20px;
+      border-radius: 26px;
     }
 
     .screen-bezel {
-      width: 420px;
-      height: 310px;
-      padding: 14px;
+      width: 400px;
+      height: 295px;
+      padding: 12px;
     }
 
+    /* Большой D-Pad */
     .dpad {
-      width: 150px;
-      height: 150px;
+      width: 168px;
+      height: 168px;
     }
 
     .d-btn {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
     }
 
-    .d-up { left: 52px; }
-    .d-left { top: 52px; }
-    .d-right { top: 52px; left: 104px; }
-    .d-down { top: 104px; left: 52px; }
+    .d-up    { top: 0;    left: 57px; }
+    .d-left  { top: 57px; left: 0; }
+    .d-right { top: 57px; left: 114px; }
+    .d-down  { top: 114px; left: 57px; }
 
-    .d-up::after { border-width: 0 8px 10px 8px; }
-    .d-left::after { border-width: 8px 10px 8px 0; }
-    .d-right::after { border-width: 8px 0 8px 10px; }
-    .d-down::after { border-width: 10px 8px 0 8px; }
+    .d-up::after    { border-width: 0 9px 12px 9px; }
+    .d-left::after  { border-width: 9px 12px 9px 0; }
+    .d-right::after { border-width: 9px 0 9px 12px; }
+    .d-down::after  { border-width: 12px 9px 0 9px; }
 
+    /* Крупные A / B */
     .ab-group {
-      gap: 22px;
+      gap: 18px;
+      transform: rotate(-10deg);
     }
 
     .ab-btn {
-      width: 66px;
-      height: 66px;
-      font-size: 15px;
+      width: 76px;
+      height: 76px;
+      font-size: 17px;
     }
 
+    /* Большие Select / Start */
     .ss-group {
-      gap: 24px;
-      margin-top: 14px;
+      gap: 18px;
+      margin-top: 16px;
     }
 
     .ss-btn {
-      width: 100px;
-      height: 38px;
-      font-size: 8px;
+      width: 118px;
+      height: 46px;
+      font-size: 9px;
+      border-radius: 23px;
     }
 
     .footer-text {
@@ -539,28 +539,46 @@
   }
 
   @media (max-width: 420px) {
-    :root {
-      --console-scale: 0.54;
+    :root { --console-scale: 0.60; }
+
+    .dpad {
+      width: 158px;
+      height: 158px;
+    }
+
+    .d-btn {
+      width: 52px;
+      height: 52px;
+    }
+
+    .d-up    { left: 53px; }
+    .d-left  { top: 53px; }
+    .d-right { top: 53px; left: 106px; }
+    .d-down  { top: 106px; left: 53px; }
+
+    .ab-btn {
+      width: 72px;
+      height: 72px;
+      font-size: 16px;
+    }
+
+    .ss-btn {
+      width: 112px;
+      height: 44px;
     }
   }
 
   @media (max-width: 360px) {
-    :root {
-      --console-scale: 0.48;
-    }
+    :root { --console-scale: 0.54; }
   }
 
-  /* Landscape phones */
+  /* Landscape */
   @media (max-height: 500px) and (orientation: landscape) {
-    :root {
-      --console-scale: 0.55;
-    }
+    :root { --console-scale: 0.58; }
   }
 
   @media (max-height: 420px) and (orientation: landscape) {
-    :root {
-      --console-scale: 0.45;
-    }
+    :root { --console-scale: 0.48; }
   }
 </style>
 </head>
