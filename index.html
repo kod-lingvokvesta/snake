@@ -629,6 +629,23 @@
   @media (max-height: 420px) and (orientation: landscape) {
     :root { --console-scale: 0.48; }
   }
+  /* Убираем задержку нажатия */
+.d-btn,
+.ab-btn,
+.ss-btn {
+  transition: transform 0.04s ease-out, box-shadow 0.04s ease-out, filter 0.04s ease-out;
+  touch-action: manipulation;          /* важно для мобильных */
+  -webkit-tap-highlight-color: transparent;
+}
+
+.d-btn.pressed,
+.ab-btn.pressed,
+.ss-btn.pressed,
+.d-btn:active,
+.ab-btn:active,
+.ss-btn:active {
+  transition: none;                   /* мгновенное нажатие */
+}
 </style>
 </head>
 <body>
@@ -1434,7 +1451,31 @@ function init(){
   S.unlockedLevels=Storage.get('unlockedLevels',1);
   S.highScore=Storage.get('highScore',0);
   Sound.init();
-  Input.init();
+  Input.init();document.querySelectorAll('[data-key]').forEach(btn => {
+  const k = btn.dataset.key;
+
+  const down = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (btn.classList.contains('pressed')) return; // защита от повторного срабатывания
+    btn.classList.add('pressed');
+    this.trigger(k);
+  };
+
+  const up = (e) => {
+    e.preventDefault();
+    btn.classList.remove('pressed');
+  };
+
+  // Используем pointer events (лучше всего работает)
+  btn.addEventListener('pointerdown', down, { passive: false });
+  btn.addEventListener('pointerup', up, { passive: false });
+  btn.addEventListener('pointerleave', up, { passive: false });
+  btn.addEventListener('pointercancel', up, { passive: false });
+
+  // Дополнительная защита от контекстного меню
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+});
   setupInput();
   requestAnimationFrame(loop);
 }
