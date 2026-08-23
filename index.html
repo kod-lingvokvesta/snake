@@ -140,6 +140,29 @@
     border-radius: 8px;
     position: relative;
     overflow: hidden;
+    animation: screenTurnOn 0.8s ease-out;
+  }
+
+  /* Эффект включения экрана */
+  @keyframes screenTurnOn {
+    0% { transform: scale(0, 0.01); opacity: 0; filter: brightness(3); }
+    30% { transform: scale(1, 0.01); opacity: 1; filter: brightness(3); }
+    60% { transform: scale(1, 1); filter: brightness(1.5); }
+    100% { transform: scale(1, 1); opacity: 1; filter: brightness(1); }
+  }
+
+  /* Блик стекла на экране */
+  .screen-lcd::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+    pointer-events: none;
+    z-index: 3;
+    border-radius: 8px 8px 0 0;
   }
 
   #canvas {
@@ -147,6 +170,8 @@
     height: 100%;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+    position: relative;
+    z-index: 1;
   }
 
   .scanlines {
@@ -155,6 +180,13 @@
     background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(15, 56, 15, 0.09) 2px, rgba(15, 56, 15, 0.09) 4px);
     pointer-events: none;
     z-index: 2;
+    animation: flicker 0.1s infinite;
+  }
+
+  @keyframes flicker {
+    0% { opacity: 0.95; }
+    50% { opacity: 1; }
+    100% { opacity: 0.98; }
   }
 
   .bottom-section {
@@ -338,164 +370,51 @@
   }
 
   /* ========== MOBILE ========== */
-  /* ========== MOBILE ========== */
-  @media (max-width: 760px) {
-    :root { --console-scale: 0.80; }
-  }
-
-  @media (max-width: 620px) {
-    :root { --console-scale: 0.72; }
-  }
-
+  @media (max-width: 760px) { :root { --console-scale: 0.80; } }
+  @media (max-width: 620px) { :root { --console-scale: 0.72; } }
   @media (max-width: 520px) {
     :root { --console-scale: 0.64; }
-
-    .console {
-      width: 650px;
-      padding: 12px 14px 14px;
-      border-radius: 22px;
-    }
-
-    /* Увеличили экран */
-    .screen-bezel {
-      width: 420px;
-      height: 300px;
-      padding: 10px;
-    }
-
-    .controls-wrapper {
-      justify-content: center;
-      gap: 20px;
-      padding: 0 6px;
-      margin-top: 10px;
-    }
-
-    .dpad {
-      width: 152px;
-      height: 152px;
-      flex-shrink: 0;
-    }
-
-    .d-btn {
-      width: 54px;
-      height: 54px;
-      border-radius: 13px;
-    }
-
+    .console { width: 650px; padding: 12px 14px 14px; border-radius: 22px; }
+    .screen-bezel { width: 420px; height: 300px; padding: 10px; }
+    .controls-wrapper { justify-content: center; gap: 20px; padding: 0 6px; margin-top: 10px; }
+    .dpad { width: 152px; height: 152px; flex-shrink: 0; }
+    .d-btn { width: 54px; height: 54px; border-radius: 13px; }
     .d-up    { top: 0;     left: 49px; }
     .d-left  { top: 49px;  left: 0; }
     .d-right { top: 49px;  left: 98px; }
     .d-down  { top: 98px;  left: 49px; }
-
     .d-up::after    { border-width: 0 10px 13px 10px; }
     .d-left::after  { border-width: 10px 13px 10px 0; }
     .d-right::after { border-width: 10px 0 10px 13px; }
     .d-down::after  { border-width: 13px 10px 0 10px; }
-
-    .ab-group {
-      gap: 12px;
-      transform: rotate(-7deg);
-    }
-
-    .ab-btn {
-      width: 66px;
-      height: 66px;
-      font-size: 15px;
-    }
-
-    .ss-group {
-      gap: 16px;
-      margin-top: 11px;
-    }
-
-    .ss-btn {
-      width: 108px;
-      height: 42px;
-      font-size: 8px;
-    }
-
-    .footer {
-      margin-top: 10px;
-    }
-
-    .footer-text {
-      font-size: 12px;
-    }
+    .ab-group { gap: 12px; transform: rotate(-7deg); }
+    .ab-btn { width: 66px; height: 66px; font-size: 15px; }
+    .ss-group { gap: 16px; margin-top: 11px; }
+    .ss-btn { width: 108px; height: 42px; font-size: 8px; }
+    .footer { margin-top: 10px; }
+    .footer-text { font-size: 12px; }
   }
-
   @media (max-width: 420px) {
     :root { --console-scale: 0.57; }
-
-    .console {
-      width: 630px;
-      padding: 10px 12px 12px;
-    }
-
-    .screen-bezel {
-      width: 400px;
-      height: 285px;
-    }
-
-    .dpad {
-      width: 144px;
-      height: 144px;
-    }
-
-    .d-btn {
-      width: 50px;
-      height: 50px;
-    }
-
+    .console { width: 630px; padding: 10px 12px 12px; }
+    .screen-bezel { width: 400px; height: 285px; }
+    .dpad { width: 144px; height: 144px; }
+    .d-btn { width: 50px; height: 50px; }
     .d-up    { left: 47px; }
     .d-left  { top: 47px; }
     .d-right { top: 47px; left: 94px; }
     .d-down  { top: 94px; left: 47px; }
-
-    .ab-btn {
-      width: 62px;
-      height: 62px;
-      font-size: 14px;
-    }
-
-    .ss-btn {
-      width: 100px;
-      height: 40px;
-    }
+    .ab-btn { width: 62px; height: 62px; font-size: 14px; }
+    .ss-btn { width: 100px; height: 40px; }
   }
-
-  @media (max-width: 360px) {
-    :root { --console-scale: 0.51; }
-  }
-
-  /* Защита по высоте */
-  @media (max-height: 780px) {
-    :root { --console-scale: 0.66; }
-  }
-
-  @media (max-height: 720px) {
-    :root { --console-scale: 0.59; }
-  }
-
-  @media (max-height: 680px) {
-    :root { --console-scale: 0.54; }
-  }
-
-  @media (max-height: 640px) {
-    :root { --console-scale: 0.49; }
-  }
-
-  @media (max-height: 600px) {
-    :root { --console-scale: 0.45; }
-  }
-
-  /* Landscape */
-  @media (max-height: 500px) and (orientation: landscape) {
-    :root { --console-scale: 0.50; }
-  }
-
-  @media (max-height: 450px) and (orientation: landscape) {
-    :root { --console-scale: 0.43; }
-  }
+  @media (max-width: 360px) { :root { --console-scale: 0.51; } }
+  @media (max-height: 780px) { :root { --console-scale: 0.66; } }
+  @media (max-height: 720px) { :root { --console-scale: 0.59; } }
+  @media (max-height: 680px) { :root { --console-scale: 0.54; } }
+  @media (max-height: 640px) { :root { --console-scale: 0.49; } }
+  @media (max-height: 600px) { :root { --console-scale: 0.45; } }
+  @media (max-height: 500px) and (orientation: landscape) { :root { --console-scale: 0.50; } }
+  @media (max-height: 450px) and (orientation: landscape) { :root { --console-scale: 0.43; } }
 </style>
 </head>
 <body>
@@ -540,7 +459,7 @@
       </div>
 
       <div class="footer">
-        <span class="footer-text">KOD_LINGVOKVESTA OS 1.0</span>
+        <span class="footer-text">KOD_LINGVOKVESTA OS 1.1</span>
         <div class="battery">
           <div class="battery-icon"><div class="battery-fill"></div></div>
         </div>
@@ -654,6 +573,14 @@ const Sound = {
   }
 };
 
+const Haptics = {
+  vibrate(pattern) {
+    if (navigator.vibrate) {
+      navigator.vibrate(pattern);
+    }
+  }
+}
+
 const Input = {
   handlers: {},
   init() {
@@ -692,6 +619,13 @@ const Input = {
     });
 
     document.getElementById('soundToggle').addEventListener('click', () => Sound.toggle());
+    
+    // Авто-пауза при сворачивании вкладки
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && S.screen === 'PLAYING') {
+        S.screen = 'PAUSED';
+      }
+    });
   },
   on(action, cb) {
     (this.handlers[action] || (this.handlers[action] = [])).push(cb);
@@ -700,7 +634,6 @@ const Input = {
     if (this.handlers[action]) {
       this.handlers[action].forEach(cb => cb());
     }
-    // звук немного отложен, чтобы не тормозить реакцию
     if (Sound.enabled) {
       requestAnimationFrame(() => {
         if (action === 'up' || action === 'down' || action === 'left' || action === 'right') Sound.play('move');
@@ -876,11 +809,13 @@ const Snake = {
   handleCorrect() {
     S.score += 100; S.correctCount++; S.caseNum++;
     Sound.play('correct');
+    Haptics.vibrate(30); // Вибрация при правильном ответе
     S.screen = 'CORRECT'; S.fbTime = 0; S.fbData = {score:100};
   },
   handleWrong(f) {
     S.lives--; S.caseNum++;
     Sound.play('wrong');
+    Haptics.vibrate([50, 50, 50]); // Вибрация при ошибке
     S.screen = 'WRONG'; S.fbTime = 0;
     const q = S.currentQuestion;
     S.fbData = {chosen: f ? f.word : '---', correct: q.answer, pronoun: q.pronoun, full: q.full, timeout: !f};
@@ -971,6 +906,7 @@ const Snake = {
     ptxtC('CORRECT!', 120, C_LCD_DARK, 20);
     ptxtC('+100', 170, C_LCD_DARK, 16);
     drawDynamicText(q.full, 210, C_LCD_DARK, 12);
+    if (S.fbTime > 500 && Math.floor(S.fbTime/400) % 2 === 0) ptxtC('PRESS A', 250, C_LCD_DARK, 10);
   },
   drawWrong() {
     clearScreen(); this.drawHUD(); this.drawTimer();
@@ -981,7 +917,7 @@ const Snake = {
     drawDynamicText(fd.full, 210, C_LCD_DARK, 12);
     if (t > 1600) {
       if (S.lives > 0) {
-        if (Math.floor(t/400) % 2 === 0) ptxtC('NEXT SENTENCE', 250, C_LCD_DARK, 10);
+        if (Math.floor(t/400) % 2 === 0) ptxtC('PRESS A', 250, C_LCD_DARK, 10);
       } else {
         if (Math.floor(t/400) % 2 === 0) ptxtC('NO LIVES LEFT', 250, C_LCD_DARK, 10);
       }
@@ -1056,11 +992,26 @@ const Menu = {
   },
   drawHowTo() {
     clearScreen();
-    ptxtC('HOW TO PLAY', 55, C_LCD_DARK, 14);
-    const lines = ['','EAT THE CORRECT WORD','TO FILL THE BLANK.','','SHE ___ A STUDENT.','ANSWER: IS','','AM -> I','IS -> HE/SHE/IT','ARE -> YOU/WE/THEY','','WRONG = -1 LIFE','3 LIVES TOTAL','','B: BACK'];
+    ptxtC('HOW TO PLAY', 45, C_LCD_DARK, 14);
+    const lines = [
+      'EAT THE CORRECT WORD',
+      'TO FILL THE BLANK.',
+      '',
+      'SHE ___ A STUDENT.',
+      'ANSWER: IS',
+      '',
+      'AM -> I',
+      'IS -> HE/SHE/IT',
+      'ARE -> YOU/WE/THEY',
+      '',
+      'WRONG = -1 LIFE',
+      '3 LIVES TOTAL',
+      '',
+      'B: BACK'
+    ];
     for (let i = 0; i < lines.length; i++) {
-      const y = 95 + i*14;
-      if (y < H-10) txt(lines[i], W/2, y, C_LCD_DARK, 9, 'center');
+      const y = 85 + i*16;
+      if (y < H-10) txt(lines[i], W/2, y, C_LCD_DARK, 10, 'center');
     }
   },
   drawLevelSelect() {
@@ -1199,6 +1150,10 @@ function setupInput() {
         Snake.init(Menu.levels[S.levelIndex].level);
         S.screen = 'LEVEL_INTRO'; S.fbTime = 0;
       }
+    } else if (S.screen === 'CORRECT' && S.fbTime > 500) {
+      Snake.nextQ(); // Пропуск экрана "Правильно"
+    } else if (S.screen === 'WRONG' && S.fbTime > 500 && S.lives > 0) {
+      Snake.nextQ(); // Пропуск экрана "Неправильно"
     }
   });
   Input.on('b', () => {
@@ -1237,10 +1192,21 @@ function loop(ts) {
   requestAnimationFrame(loop);
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+// Ждем загрузки шрифта перед стартом, чтобы интерфейс не прыгал
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  });
 } else {
-  init();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 }
 </script>
 </body>
