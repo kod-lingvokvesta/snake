@@ -338,105 +338,159 @@
   }
 
   /* ========== MOBILE ========== */
+    /* ========== MOBILE ========== */
   @media (max-width: 760px) {
-    :root { --console-scale: 0.85; }
+    :root { --console-scale: 0.82; }
   }
 
   @media (max-width: 620px) {
-    :root { --console-scale: 0.78; }
+    :root { --console-scale: 0.74; }
   }
 
   @media (max-width: 520px) {
-    :root { --console-scale: 0.70; }
+    :root { --console-scale: 0.64; }
 
     .console {
-      padding: 14px 12px 16px;
-      border-radius: 24px;
+      padding: 12px 10px 14px;
+      border-radius: 22px;
+      height: auto;
+      min-height: 0;
     }
 
     .screen-bezel {
-      width: 390px;
-      height: 280px;
-      padding: 11px;
+      width: 360px;
+      height: 255px;
+      padding: 10px;
     }
 
     .controls-wrapper {
       justify-content: center;
-      gap: 28px;
+      gap: 22px;
       padding: 0;
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     .dpad {
-      width: 178px;
-      height: 178px;
+      width: 158px;
+      height: 158px;
       flex-shrink: 0;
     }
 
     .d-btn {
-      width: 62px;
-      height: 62px;
-      border-radius: 16px;
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
     }
 
-    .d-up    { top: 0;     left: 58px; }
-    .d-left  { top: 58px;  left: 0; }
-    .d-right { top: 58px;  left: 116px; }
-    .d-down  { top: 116px; left: 58px; }
+    .d-up    { top: 0;     left: 51px; }
+    .d-left  { top: 51px;  left: 0; }
+    .d-right { top: 51px;  left: 102px; }
+    .d-down  { top: 102px; left: 51px; }
 
-    .d-up::after    { border-width: 0 12px 16px 12px; }
-    .d-left::after  { border-width: 12px 16px 12px 0; }
-    .d-right::after { border-width: 12px 0 12px 16px; }
-    .d-down::after  { border-width: 16px 12px 0 12px; }
+    .d-up::after    { border-width: 0 11px 14px 11px; }
+    .d-left::after  { border-width: 11px 14px 11px 0; }
+    .d-right::after { border-width: 11px 0 11px 14px; }
+    .d-down::after  { border-width: 14px 11px 0 11px; }
 
     .ab-group {
-      gap: 14px;
+      gap: 12px;
       transform: rotate(-8deg);
     }
 
     .ab-btn {
-      width: 76px;
-      height: 76px;
-      font-size: 17px;
+      width: 68px;
+      height: 68px;
+      font-size: 15px;
     }
 
     .ss-group {
-      gap: 18px;
-      margin-top: 14px;
+      gap: 16px;
+      margin-top: 12px;
     }
 
     .ss-btn {
-      width: 118px;
-      height: 48px;
-      font-size: 9px;
+      width: 108px;
+      height: 42px;
+      font-size: 8px;
+    }
+
+    .footer {
+      margin-top: 10px;
+    }
+
+    .footer-text {
+      font-size: 12px;
+      letter-spacing: 1px;
     }
   }
 
   @media (max-width: 420px) {
-    :root { --console-scale: 0.62; }
+    :root { --console-scale: 0.56; }
 
-    .controls-wrapper { gap: 22px; }
+    .screen-bezel {
+      width: 340px;
+      height: 240px;
+    }
 
-    .dpad { width: 168px; height: 168px; }
+    .dpad {
+      width: 148px;
+      height: 148px;
+    }
 
-    .d-btn { width: 58px; height: 58px; }
+    .d-btn {
+      width: 52px;
+      height: 52px;
+    }
 
-    .d-up    { left: 55px; }
-    .d-left  { top: 55px; }
-    .d-right { top: 55px; left: 110px; }
-    .d-down  { top: 110px; left: 55px; }
+    .d-up    { left: 48px; }
+    .d-left  { top: 48px; }
+    .d-right { top: 48px; left: 96px; }
+    .d-down  { top: 96px; left: 48px; }
 
-    .ab-btn { width: 72px; height: 72px; font-size: 16px; }
-    .ss-btn { width: 112px; height: 46px; }
+    .ab-btn {
+      width: 64px;
+      height: 64px;
+      font-size: 14px;
+    }
+
+    .ss-btn {
+      width: 100px;
+      height: 40px;
+    }
   }
 
   @media (max-width: 360px) {
-    :root { --console-scale: 0.56; }
-    .controls-wrapper { gap: 18px; }
+    :root { --console-scale: 0.50; }
   }
 
+  /* Дополнительная защита по высоте экрана */
+  @media (max-height: 780px) {
+    :root { --console-scale: 0.68; }
+  }
+
+  @media (max-height: 720px) {
+    :root { --console-scale: 0.60; }
+  }
+
+  @media (max-height: 680px) {
+    :root { --console-scale: 0.55; }
+  }
+
+  @media (max-height: 640px) {
+    :root { --console-scale: 0.50; }
+  }
+
+  @media (max-height: 600px) {
+    :root { --console-scale: 0.46; }
+  }
+
+  /* Landscape */
   @media (max-height: 500px) and (orientation: landscape) {
-    :root { --console-scale: 0.58; }
+    :root { --console-scale: 0.52; }
+  }
+
+  @media (max-height: 450px) and (orientation: landscape) {
+    :root { --console-scale: 0.44; }
   }
 </style>
 </head>
