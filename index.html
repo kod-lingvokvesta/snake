@@ -49,7 +49,6 @@
   @keyframes floatB { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-40px, -45px) scale(1.08); } }
 
   .vignette { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(8, 10, 7, 0.55) 100%); pointer-events: none; z-index: 2; }
-
   .scene { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; perspective: 1400px; z-index: 1; }
 
   .console-wrapper {
@@ -64,8 +63,7 @@
     width: var(--base-w);
     height: var(--base-h);
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     transform: scale(var(--console-scale));
     transform-origin: top left;
     background: linear-gradient(145deg, rgba(245, 240, 230, 0.22) 0%, rgba(152, 183, 140, 0.28) 35%, rgba(106, 142, 96, 0.32) 70%, rgba(92, 122, 82, 0.25) 100%);
@@ -143,7 +141,7 @@
   .modal-content h2 { font-family: 'Press Start 2P', monospace; font-size: 18px; color: #5C7A52; margin-bottom: 20px; text-align: center; }
   .modal-content p { font-size: 18px; margin-bottom: 10px; line-height: 1.4; }
   .modal-content code { background: #d4c8b4; padding: 2px 8px; border-radius: 4px; font-size: 16px; }
-  .modal-content textarea { width: 100%; height: 150px; background: #0F380F; color: #9BBC0F; border: 2px solid #5C7A52; border-radius: 8px; padding: 15px; font-family: 'VT323', monospace; font-size: 18px; margin: 15px 0; resize: vertical; line-height: 1.3; }
+  .modal-content textarea { width: 100%; height: 200px; background: #0F380F; color: #9BBC0F; border: 2px solid #5C7A52; border-radius: 8px; padding: 15px; font-family: 'VT323', monospace; font-size: 18px; margin: 15px 0; resize: vertical; line-height: 1.3; }
   .modal-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 10px; }
   .modal-btn { flex: 1; padding: 14px; border: none; border-radius: 8px; font-family: 'Press Start 2P', monospace; font-size: 12px; cursor: pointer; text-transform: uppercase; transition: transform 0.1s; }
   .modal-btn:active { transform: translateY(2px); }
@@ -195,7 +193,7 @@
         </div>
 
         <div class="footer">
-          <span class="footer-text">KOD_LINGVOKVESTA OS 1.7</span>
+          <span class="footer-text">KOD_LINGVOKVESTA OS 2.0</span>
           <div class="battery">
             <div class="battery-icon"><div class="battery-fill"></div></div>
           </div>
@@ -209,10 +207,12 @@
 <div id="teacherModal" class="modal-overlay">
   <div class="modal-content">
     <h2>TEACHER'S MODE</h2>
-    <p>Enter your sentences. Use the format:</p>
-    <p style="text-align: center;"><code>Text ___ | Answer | Full | Pronoun</code></p>
-    <p style="font-size: 16px; color: #7a6a5a;">Example: <code>She ___ a doctor. | IS | She is a doctor. | SHE</code></p>
-    <textarea id="customSentencesInput"></textarea>
+    <p>Write your sentences. Put the correct word in [ ].</p>
+    <p>After the | sign, write TWO wrong words separated by a comma.</p>
+    <p style="text-align: center;"><code>I [play] chess. | plays, playing</code></p>
+    <p style="font-size: 16px; color: #7a6a5a;">Optional pronoun at the end: <code>She [is] a doctor. | am, are | SHE</code></p>
+    <p style="font-size: 16px; color: #7a6a5a;">You can add <strong>UNLIMITED</strong> lines!</p>
+    <textarea id="customSentencesInput" placeholder="I [play] chess. | plays, playing&#10;He [reads] books. | read, reading"></textarea>
     <div class="modal-buttons">
       <button class="modal-btn btn-clear" id="clearCustomBtn">Clear</button>
       <button class="modal-btn btn-cancel" id="cancelCustomBtn">Cancel</button>
@@ -224,6 +224,9 @@
 <script>
 'use strict';
 
+// ДЛЯ ПЕРЕКЛЮЧЕНИЯ ВЕРСИЙ:
+// true = Полная версия (с Teacher's Mode)
+// false = Демо-версия (только встроенные уровни)
 const IS_FULL_VERSION = true;
 
 const W = 420, H = 315, CELL = 21;
@@ -237,40 +240,40 @@ const C_LCD_DARK = '#0F380F';
 
 const SENTENCES = {
   1: [
-    {text:"I ___ a student.",answer:"AM",full:"I am a student.",pronoun:"I"},
-    {text:"You ___ my friend.",answer:"ARE",full:"You are my friend.",pronoun:"YOU"},
-    {text:"He ___ from London.",answer:"IS",full:"He is from London.",pronoun:"HE"},
-    {text:"She ___ a teacher.",answer:"IS",full:"She is a teacher.",pronoun:"SHE"},
-    {text:"It ___ cold today.",answer:"IS",full:"It is cold today.",pronoun:"IT"},
-    {text:"We ___ at school.",answer:"ARE",full:"We are at school.",pronoun:"WE"},
-    {text:"They ___ from Brazil.",answer:"ARE",full:"They are from Brazil.",pronoun:"THEY"},
-    {text:"I ___ very tired.",answer:"AM",full:"I am very tired.",pronoun:"I"},
-    {text:"She ___ 20 years old.",answer:"IS",full:"She is 20 years old.",pronoun:"SHE"},
-    {text:"They ___ very happy.",answer:"ARE",full:"They are very happy.",pronoun:"THEY"},
+    {text:"I ___ a student.",answer:"AM",wrongWords:["IS","ARE"],full:"I am a student.",pronoun:"I"},
+    {text:"You ___ my friend.",answer:"ARE",wrongWords:["AM","IS"],full:"You are my friend.",pronoun:"YOU"},
+    {text:"He ___ from London.",answer:"IS",wrongWords:["AM","ARE"],full:"He is from London.",pronoun:"HE"},
+    {text:"She ___ a teacher.",answer:"IS",wrongWords:["AM","ARE"],full:"She is a teacher.",pronoun:"SHE"},
+    {text:"It ___ cold today.",answer:"IS",wrongWords:["AM","ARE"],full:"It is cold today.",pronoun:"IT"},
+    {text:"We ___ at school.",answer:"ARE",wrongWords:["AM","IS"],full:"We are at school.",pronoun:"WE"},
+    {text:"They ___ from Brazil.",answer:"ARE",wrongWords:["AM","IS"],full:"They are from Brazil.",pronoun:"THEY"},
+    {text:"I ___ very tired.",answer:"AM",wrongWords:["IS","ARE"],full:"I am very tired.",pronoun:"I"},
+    {text:"She ___ 20 years old.",answer:"IS",wrongWords:["AM","ARE"],full:"She is 20 years old.",pronoun:"SHE"},
+    {text:"They ___ very happy.",answer:"ARE",wrongWords:["AM","IS"],full:"They are very happy.",pronoun:"THEY"},
   ],
   2: [
-    {text:"We ___ ready for the trip.",answer:"ARE",full:"We are ready for the trip.",pronoun:"WE"},
-    {text:"He ___ at home right now.",answer:"IS",full:"He is at home right now.",pronoun:"HE"},
-    {text:"She ___ at the library.",answer:"IS",full:"She is at the library.",pronoun:"SHE"},
-    {text:"They ___ from Canada.",answer:"ARE",full:"They are from Canada.",pronoun:"THEY"},
-    {text:"It ___ very small and light.",answer:"IS",full:"It is very small and light.",pronoun:"IT"},
-    {text:"You ___ late again today.",answer:"ARE",full:"You are late again today.",pronoun:"YOU"},
-    {text:"I ___ here to help you.",answer:"AM",full:"I am here to help you.",pronoun:"I"},
-    {text:"The dog ___ in the garden.",answer:"IS",full:"The dog is in the garden.",pronoun:"IT"},
-    {text:"We ___ in the same class.",answer:"ARE",full:"We are in the same class.",pronoun:"WE"},
-    {text:"He ___ my best friend.",answer:"IS",full:"He is my best friend.",pronoun:"HE"},
+    {text:"We ___ ready for the trip.",answer:"ARE",wrongWords:["AM","IS"],full:"We are ready for the trip.",pronoun:"WE"},
+    {text:"He ___ at home right now.",answer:"IS",wrongWords:["AM","ARE"],full:"He is at home right now.",pronoun:"HE"},
+    {text:"She ___ at the library.",answer:"IS",wrongWords:["AM","ARE"],full:"She is at the library.",pronoun:"SHE"},
+    {text:"They ___ from Canada.",answer:"ARE",wrongWords:["AM","IS"],full:"They are from Canada.",pronoun:"THEY"},
+    {text:"It ___ very small and light.",answer:"IS",wrongWords:["AM","ARE"],full:"It is very small and light.",pronoun:"IT"},
+    {text:"You ___ late again today.",answer:"ARE",wrongWords:["AM","IS"],full:"You are late again today.",pronoun:"YOU"},
+    {text:"I ___ here to help you.",answer:"AM",wrongWords:["IS","ARE"],full:"I am here to help you.",pronoun:"I"},
+    {text:"The dog ___ in the garden.",answer:"IS",wrongWords:["AM","ARE"],full:"The dog is in the garden.",pronoun:"IT"},
+    {text:"We ___ in the same class.",answer:"ARE",wrongWords:["AM","IS"],full:"We are in the same class.",pronoun:"WE"},
+    {text:"He ___ my best friend.",answer:"IS",wrongWords:["AM","ARE"],full:"He is my best friend.",pronoun:"HE"},
   ],
   3: [
-    {text:"My friends ___ at the airport.",answer:"ARE",full:"My friends are at the airport.",pronoun:"THEY"},
-    {text:"She ___ not at home today.",answer:"IS",full:"She is not at home today.",pronoun:"SHE"},
-    {text:"We ___ excited about the project.",answer:"ARE",full:"We are excited about the project.",pronoun:"WE"},
-    {text:"The children ___ in the park.",answer:"ARE",full:"The children are in the park.",pronoun:"THEY"},
-    {text:"My brother and I ___ good at math.",answer:"ARE",full:"My brother and I are good at math.",pronoun:"WE"},
-    {text:"The weather ___ terrible today.",answer:"IS",full:"The weather is terrible today.",pronoun:"IT"},
-    {text:"These books ___ very interesting.",answer:"ARE",full:"These books are very interesting.",pronoun:"THEY"},
-    {text:"Everyone ___ ready to start.",answer:"IS",full:"Everyone is ready to start.",pronoun:"EVERYONE"},
-    {text:"My sister ___ a doctor in London.",answer:"IS",full:"My sister is a doctor in London.",pronoun:"SHE"},
-    {text:"The students ___ in the classroom.",answer:"ARE",full:"The students are in the classroom.",pronoun:"THEY"},
+    {text:"My friends ___ at the airport.",answer:"ARE",wrongWords:["AM","IS"],full:"My friends are at the airport.",pronoun:"THEY"},
+    {text:"She ___ not at home today.",answer:"IS",wrongWords:["AM","ARE"],full:"She is not at home today.",pronoun:"SHE"},
+    {text:"We ___ excited about the project.",answer:"ARE",wrongWords:["AM","IS"],full:"We are excited about the project.",pronoun:"WE"},
+    {text:"The children ___ in the park.",answer:"ARE",wrongWords:["AM","IS"],full:"The children are in the park.",pronoun:"THEY"},
+    {text:"My brother and I ___ good at math.",answer:"ARE",wrongWords:["AM","IS"],full:"My brother and I are good at math.",pronoun:"WE"},
+    {text:"The weather ___ terrible today.",answer:"IS",wrongWords:["AM","ARE"],full:"The weather is terrible today.",pronoun:"IT"},
+    {text:"These books ___ very interesting.",answer:"ARE",wrongWords:["AM","IS"],full:"These books are very interesting.",pronoun:"THEY"},
+    {text:"Everyone ___ ready to start.",answer:"IS",wrongWords:["AM","ARE"],full:"Everyone is ready to start.",pronoun:"EVERYONE"},
+    {text:"My sister ___ a doctor in London.",answer:"IS",wrongWords:["AM","ARE"],full:"My sister is a doctor in London.",pronoun:"SHE"},
+    {text:"The students ___ in the classroom.",answer:"ARE",wrongWords:["AM","IS"],full:"The students are in the classroom.",pronoun:"THEY"},
   ]
 };
 
@@ -386,9 +389,18 @@ const Snake = {
   startQ() { S.currentQuestion = S.questions[S.questionIdx]; const sx = Math.floor(GRID_COLS/2)-1, sy = Math.floor(GRID_ROWS/2); S.snake = [{x:sx,y:sy},{x:sx-1,y:sy},{x:sx-2,y:sy}]; S.dir = {x:1,y:0}; S.nextDir = {x:1,y:0}; this.spawnFood(); S.timer = S.maxTimer; S.screen = 'QUESTION_INTRO'; S.fbTime = 0; },
   spawnFood() {
     const correctWord = S.currentQuestion.answer;
-    const wrongWords = ['AM','IS','ARE'].filter(w => w !== correctWord);
+    
+    // Берем неправильные слова из вопроса, если их нет - генерируем стандартные для AM/IS/ARE
+    let wrongWords = S.currentQuestion.wrongWords;
+    if (!wrongWords || wrongWords.length < 2) {
+      wrongWords = ['AM','IS','ARE'].filter(w => w !== correctWord);
+    } else {
+      wrongWords = wrongWords.slice(0, 2); // Берем ровно 2 неправильных слова
+    }
+    
     let words = [correctWord, wrongWords[0], wrongWords[1]];
     for (let i = words.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [words[i], words[j]] = [words[j], words[i]]; }
+    
     const occ = new Set(); S.snake.forEach(s => occ.add(s.x+','+s.y));
     const validPositions = [];
     for (let y = 0; y < GRID_ROWS; y++) { for (let x = 0; x < GRID_COLS-1; x++) { if (occ.has(x+','+y) || occ.has((x+1)+','+y)) continue; validPositions.push({x,y}); } }
@@ -541,9 +553,18 @@ function openTeacherModal() {
   const textarea = document.getElementById('customSentencesInput');
   
   if (S.customSentences.length > 0) {
-    textarea.value = S.customSentences.map(q => `${q.text} | ${q.answer} | ${q.full} | ${q.pronoun}`).join('\n');
+    textarea.value = S.customSentences.map(q => {
+      let line = q.text.replace('___', `[${q.answer.toLowerCase()}]`);
+      if (q.wrongWords && q.wrongWords.length > 0) {
+        line += ` | ${q.wrongWords.map(w => w.toLowerCase()).join(', ')}`;
+      }
+      if (q.pronoun && q.pronoun !== 'CUSTOM') {
+        line += ` | ${q.pronoun}`;
+      }
+      return line;
+    }).join('\n');
   } else {
-    textarea.value = "I ___ a student. | AM | I am a student. | I\nShe ___ a doctor. | IS | She is a doctor. | SHE\nThey ___ friends. | ARE | They are friends. | THEY";
+    textarea.value = "I [play] chess. | plays, playing\nHe [reads] books. | read, reading\nShe [is] a doctor. | am, are | SHE";
   }
   
   modal.classList.add('active');
@@ -553,28 +574,42 @@ function openTeacherModal() {
 function closeTeacherModal() { document.getElementById('teacherModal').classList.remove('active'); }
 
 function parseCustomSentences(text) {
-  const lines = text.trim().split('\n');
+  const lines = text.trim().split(/\r?\n/);
   const parsed = [];
+  
   for (let line of lines) {
     if (!line.trim()) continue;
-    const parts = line.split('|').map(p => p.trim());
-    if (parts.length >= 2) {
-      let qText = parts[0].replace(/[\s\u00A0\u2000-\u200B\uFEFF]+/g, ' ').trim();
-      const answer = parts[1].toUpperCase().trim();
-      let qFull = (parts[2] || '').replace(/[\s\u00A0\u2000-\u200B\uFEFF]+/g, ' ').trim();
-      const pronoun = (parts[3] || 'CUSTOM').toUpperCase().trim();
+    
+    const parts = line.split('|').map(p => p.replace(/[\s\u00A0\u2000-\u200B\uFEFF]+/g, ' ').trim());
+    if (parts.length === 0) continue;
+
+    const sentencePart = parts[0];
+    const match = sentencePart.match(/\[(.*?)\]/);
+    
+    if (match) {
+      const answer = match[1].toUpperCase().trim();
+      const qText = sentencePart.replace(/\[.*?\]/g, '___').replace(/\s+/g, ' ').trim();
+      const qFull = sentencePart.replace(/\[(.*?)\]/g, '$1').replace(/\s+/g, ' ').trim();
       
-      if (['AM', 'IS', 'ARE'].includes(answer)) {
-        qText = qText.split(/_{2,}/).join(' ___ ').replace(/\s+/g, ' ').trim();
-        
-        if (!qFull) {
-          qFull = qText.split('___').join(` ${answer} `).replace(/\s+/g, ' ').trim();
-        } else {
-          qFull = qFull.split(/_{2,}/).join(` ${answer} `).replace(/\s+/g, ' ').trim();
-        }
-        
-        parsed.push({ text: qText, answer, full: qFull, pronoun });
+      // Извлекаем неправильные слова (из второй части, если она есть)
+      let wrongWords = [];
+      if (parts.length >= 2) {
+        wrongWords = parts[1].split(',').map(w => w.toUpperCase().trim()).filter(w => w);
       }
+      
+      // Извлекаем местоимение (из третьей части, если она есть)
+      let pronoun = 'CUSTOM';
+      // Если частей 3 и более, и последняя часть не выглядит как список слов (не содержит запятых)
+      if (parts.length >= 3) {
+        pronoun = parts[parts.length - 1].toUpperCase().trim();
+      }
+      
+      // Если неправильных слов меньше 2, добавляем заглушки, чтобы игра не сломалась
+      while (wrongWords.length < 2) {
+        wrongWords.push(answer + (wrongWords.length === 0 ? 'S' : 'ED'));
+      }
+      
+      parsed.push({ text: qText, answer, wrongWords, full: qFull, pronoun });
     }
   }
   return parsed;
@@ -592,7 +627,7 @@ function setupTeacherModal() {
       Snake.init(1); 
       S.screen = 'LEVEL_INTRO'; S.fbTime = 0;
     } else {
-      alert("Ошибка! Проверьте формат ввода.\nНужно: Текст ___ | Ответ | Полное предложение | Местоимение");
+      alert("Ошибка! Проверьте формат ввода.\nПример: I [play] chess. | plays, playing");
     }
   });
 
