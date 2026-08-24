@@ -18,17 +18,16 @@
     --lcd-green: #9BBC0F;
     --lcd-dark: #0F380F;
     --shadow-deep: rgba(40, 50, 35, 0.55);
-    /* Уменьшаем базовый размер и ограничиваем масштаб */
-    --console-scale: min(calc(94vw / 680), calc(88svh / 760), 1);
+    --base-w: 680px;
+    --base-h: 780px;
+    /* Убираем жесткое ограничение в 1.0 для десктопа, чтобы она была крупнее */
+    --console-scale: min(calc(96vw / var(--base-w)), calc(92svh / var(--base-h)), 1.4);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html, body { height: 100%; overflow: hidden; }
 
   body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background: 
       radial-gradient(ellipse at 30% 20%, rgba(212, 168, 75, 0.12) 0%, transparent 50%),
       radial-gradient(ellipse at 70% 80%, rgba(152, 183, 140, 0.18) 0%, transparent 55%),
@@ -51,11 +50,34 @@
   @keyframes floatB { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-40px, -45px) scale(1.08); } }
 
   .vignette { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(8, 10, 7, 0.55) 100%); pointer-events: none; z-index: 2; }
-  .scene { perspective: 1400px; position: relative; z-index: 1; transform: scale(var(--console-scale)); transform-origin: center center; }
+
+  /* Новая обертка для идеального выравнивания */
+  .scene {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1400px;
+    z-index: 1;
+  }
+
+  .console-wrapper {
+    width: calc(var(--base-w) * var(--console-scale));
+    height: calc(var(--base-h) * var(--console-scale));
+    position: relative;
+    transform: rotateX(6deg) rotateY(-2deg);
+    transform-style: preserve-3d;
+  }
 
   .console {
-    width: 680px;
-    height: 760px;
+    width: var(--base-w);
+    height: var(--base-h);
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: scale(var(--console-scale));
+    transform-origin: top left;
     background: linear-gradient(145deg, rgba(245, 240, 230, 0.22) 0%, rgba(152, 183, 140, 0.28) 35%, rgba(106, 142, 96, 0.32) 70%, rgba(92, 122, 82, 0.25) 100%);
     backdrop-filter: blur(18px) saturate(1.15);
     -webkit-backdrop-filter: blur(18px) saturate(1.15);
@@ -64,10 +86,7 @@
     box-shadow: 0 0 80px rgba(152, 183, 140, 0.28), 0 0 140px rgba(212, 168, 75, 0.08), 0 40px 80px var(--shadow-deep), 0 16px 32px rgba(0, 0, 0, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.45), inset 0 -3px 8px rgba(40, 50, 35, 0.18);
     display: flex;
     flex-direction: column;
-    padding: 28px 36px 32px;
-    position: relative;
-    transform: rotateX(6deg) rotateY(-2deg);
-    transform-style: preserve-3d;
+    padding: 28px 32px;
   }
 
   .top-section { display: flex; justify-content: center; margin-bottom: 18px; }
@@ -77,8 +96,8 @@
     border-radius: 14px;
     padding: 20px;
     box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.85), 0 3px 0 rgba(255, 255, 255, 0.12);
-    width: 420px;
-    height: 315px;
+    width: 460px;
+    height: 345px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,7 +119,7 @@
   @keyframes flicker { 0% { opacity: 0.95; } 50% { opacity: 1; } 100% { opacity: 0.98; } }
 
   .bottom-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
-  .controls-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; margin-top: 20px; }
+  .controls-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-top: 20px; }
 
   /* D-PAD */
   .dpad { position: relative; width: 160px; height: 160px; }
@@ -124,23 +143,23 @@
   .ss-btn { width: 108px; height: 38px; border: none; border-radius: 19px; cursor: pointer; background: linear-gradient(180deg, #e8dfd0 0%, #d4c8b4 100%); box-shadow: 0 4px 0 #b8a890, inset 0 1px 2px rgba(255,255,255,0.6); font-family: 'Press Start 2P', monospace; font-size: 8px; color: #5a5040; letter-spacing: 1px; text-transform: uppercase; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
   .ss-btn.pressed { transform: translateY(3px); box-shadow: 0 1px 0 #b8a890, inset 0 2px 4px rgba(0,0,0,0.15); }
 
-  .footer { display: flex; justify-content: space-between; align-items: center; padding: 0 8px; margin-top: 16px; }
+  .footer { display: flex; justify-content: space-between; align-items: center; padding: 0 16px; margin-top: 16px; }
   .footer-text { font-family: 'VT323', monospace; font-size: 16px; color: rgba(245, 240, 230, 0.65); letter-spacing: 1.5px; cursor: pointer; }
   .battery-icon { width: 30px; height: 14px; border: 1.5px solid rgba(245, 240, 230, 0.5); border-radius: 3px; padding: 2px; position: relative; }
   .battery-icon::after { content: ''; position: absolute; right: -4px; top: 3px; width: 3px; height: 6px; background: rgba(245, 240, 230, 0.5); border-radius: 0 1px 1px 0; }
   .battery-fill { width: 72%; height: 100%; background: linear-gradient(90deg, #98b78c, #b8d4a8); border-radius: 1px; }
 
-  /* Модальное окно Teacher's Mode */
+  /* Увеличенное модальное окно Teacher's Mode */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
   .modal-overlay.active { display: flex; }
   
-  .modal-content { background: linear-gradient(145deg, #F5F0E6, #E8DFD0); border: 4px solid #6A8E60; border-radius: 16px; padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 0 40px rgba(152, 183, 140, 0.5); font-family: 'VT323', monospace; color: #2a3228; }
-  .modal-content h2 { font-family: 'Press Start 2P', monospace; font-size: 12px; color: #5C7A52; margin-bottom: 12px; text-align: center; }
-  .modal-content p { font-size: 14px; margin-bottom: 6px; line-height: 1.3; }
-  .modal-content code { background: #d4c8b4; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
-  .modal-content textarea { width: 100%; height: 100px; background: #0F380F; color: #9BBC0F; border: 2px solid #5C7A52; border-radius: 8px; padding: 10px; font-family: 'VT323', monospace; font-size: 14px; margin: 10px 0; resize: vertical; line-height: 1.2; }
-  .modal-buttons { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; }
-  .modal-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-family: 'Press Start 2P', monospace; font-size: 9px; cursor: pointer; text-transform: uppercase; transition: transform 0.1s; }
+  .modal-content { background: linear-gradient(145deg, #F5F0E6, #E8DFD0); border: 4px solid #6A8E60; border-radius: 16px; padding: 30px; width: 100%; max-width: 600px; box-shadow: 0 0 40px rgba(152, 183, 140, 0.5); font-family: 'VT323', monospace; color: #2a3228; }
+  .modal-content h2 { font-family: 'Press Start 2P', monospace; font-size: 18px; color: #5C7A52; margin-bottom: 20px; text-align: center; }
+  .modal-content p { font-size: 18px; margin-bottom: 10px; line-height: 1.4; }
+  .modal-content code { background: #d4c8b4; padding: 2px 8px; border-radius: 4px; font-size: 16px; }
+  .modal-content textarea { width: 100%; height: 150px; background: #0F380F; color: #9BBC0F; border: 2px solid #5C7A52; border-radius: 8px; padding: 15px; font-family: 'VT323', monospace; font-size: 18px; margin: 15px 0; resize: vertical; line-height: 1.3; }
+  .modal-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 10px; }
+  .modal-btn { flex: 1; padding: 14px; border: none; border-radius: 8px; font-family: 'Press Start 2P', monospace; font-size: 12px; cursor: pointer; text-transform: uppercase; transition: transform 0.1s; }
   .modal-btn:active { transform: translateY(2px); }
   .btn-save { background: #98B78C; color: #0F380F; box-shadow: 0 4px 0 #6A8E60; }
   .btn-clear { background: #C47A5A; color: #FFF; box-shadow: 0 4px 0 #7a3e2a; }
@@ -158,42 +177,44 @@
 <div class="vignette"></div>
 
 <div class="scene">
-  <div class="console">
-    <div class="top-section">
-      <div class="screen-bezel">
-        <div class="screen-lcd">
-          <canvas id="canvas" width="420" height="315"></canvas>
-          <div class="scanlines"></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="bottom-section">
-      <div class="controls-wrapper">
-        <div class="dpad">
-          <button class="d-btn d-up" data-key="up"></button>
-          <button class="d-btn d-left" data-key="left"></button>
-          <button class="d-btn d-right" data-key="right"></button>
-          <button class="d-btn d-down" data-key="down"></button>
-        </div>
-
-        <div class="ab-group">
-          <button class="ab-btn btn-b" data-key="b">B</button>
-          <button class="ab-btn btn-a" data-key="a">A</button>
+  <div class="console-wrapper">
+    <div class="console">
+      <div class="top-section">
+        <div class="screen-bezel">
+          <div class="screen-lcd">
+            <canvas id="canvas" width="420" height="315"></canvas>
+            <div class="scanlines"></div>
+          </div>
         </div>
       </div>
 
-      <div class="ss-group">
-        <button class="ss-btn btn-select" data-key="select">Select</button>
-        <button class="ss-btn btn-start" data-key="start">Start</button>
-      </div>
+      <div class="bottom-section">
+        <div class="controls-wrapper">
+          <div class="dpad">
+            <button class="d-btn d-up" data-key="up"></button>
+            <button class="d-btn d-left" data-key="left"></button>
+            <button class="d-btn d-right" data-key="right"></button>
+            <button class="d-btn d-down" data-key="down"></button>
+          </div>
 
-      <div class="footer">
-        <span class="footer-text">KOD_LINGVOKVESTA OS 1.5</span>
-        <div class="battery">
-          <div class="battery-icon"><div class="battery-fill"></div></div>
+          <div class="ab-group">
+            <button class="ab-btn btn-b" data-key="b">B</button>
+            <button class="ab-btn btn-a" data-key="a">A</button>
+          </div>
         </div>
-        <span class="footer-text" id="soundToggle">SOUND: ON</span>
+
+        <div class="ss-group">
+          <button class="ss-btn btn-select" data-key="select">Select</button>
+          <button class="ss-btn btn-start" data-key="start">Start</button>
+        </div>
+
+        <div class="footer">
+          <span class="footer-text">KOD_LINGVOKVESTA OS 1.6</span>
+          <div class="battery">
+            <div class="battery-icon"><div class="battery-fill"></div></div>
+          </div>
+          <span class="footer-text" id="soundToggle">SOUND: ON</span>
+        </div>
       </div>
     </div>
   </div>
@@ -205,7 +226,7 @@
     <h2>TEACHER'S MODE</h2>
     <p>Enter your sentences. Use the format:</p>
     <p style="text-align: center;"><code>Text ___ | Answer | Full | Pronoun</code></p>
-    <p style="font-size: 12px; color: #7a6a5a;">Example: <code>She ___ a doctor. | IS | She is a doctor. | SHE</code></p>
+    <p style="font-size: 16px; color: #7a6a5a;">Example: <code>She ___ a doctor. | IS | She is a doctor. | SHE</code></p>
     <textarea id="customSentencesInput" placeholder="I ___ a cat. | AM | I am a cat. | I&#10;He ___ a dog. | IS | He is a dog. | HE"></textarea>
     <div class="modal-buttons">
       <button class="modal-btn btn-clear" id="clearCustomBtn">Clear</button>
@@ -220,7 +241,6 @@
 
 const IS_FULL_VERSION = true;
 
-// Уменьшенное разрешение Canvas (420x315) для соответствия новому размеру экрана
 const W = 420, H = 315, CELL = 21;
 const GRID_COLS = 18, GRID_ROWS = 10;
 const GRID_X = 21, GRID_Y = 45;
@@ -531,7 +551,6 @@ function setupInput() {
   Input.on('select', () => Sound.toggle());
 }
 
-// Логика Teacher's Mode
 function openTeacherModal() {
   const modal = document.getElementById('teacherModal');
   const textarea = document.getElementById('customSentencesInput');
