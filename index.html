@@ -18,15 +18,12 @@
     --lcd-green: #9BBC0F;
     --lcd-dark: #0F380F;
     --shadow-deep: rgba(40, 50, 35, 0.55);
-    --console-scale: 1;
+    /* Уменьшаем базовый размер и ограничиваем масштаб */
+    --console-scale: min(calc(94vw / 680), calc(88svh / 760), 1);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html, body {
-    height: 100%;
-    overflow: hidden;
-  }
+  html, body { height: 100%; overflow: hidden; }
 
   body {
     display: flex;
@@ -43,70 +40,28 @@
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
-  .atmosphere {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
+  .atmosphere { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .bokeh { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.38; pointer-events: none; }
+  .b1 { width: 400px; height: 400px; background: #98b78c; top: -120px; left: -100px; animation: floatA 22s infinite ease-in-out; }
+  .b2 { width: 350px; height: 350px; background: #d4a84b; bottom: -100px; right: -60px; animation: floatB 18s infinite ease-in-out; }
+  .b3 { width: 250px; height: 250px; background: #b87a7a; top: 35%; right: 12%; animation: floatA 26s infinite ease-in-out reverse; opacity: 0.22; }
+  .b4 { width: 150px; height: 150px; background: #7a9ba8; bottom: 25%; left: 15%; animation: floatB 20s infinite ease-in-out; opacity: 0.2; }
 
-  .bokeh {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(90px);
-    opacity: 0.38;
-    pointer-events: none;
-  }
-  .b1 { width: 520px; height: 520px; background: #98b78c; top: -160px; left: -140px; animation: floatA 22s infinite ease-in-out; }
-  .b2 { width: 420px; height: 420px; background: #d4a84b; bottom: -120px; right: -80px; animation: floatB 18s infinite ease-in-out; }
-  .b3 { width: 280px; height: 280px; background: #b87a7a; top: 35%; right: 12%; animation: floatA 26s infinite ease-in-out reverse; opacity: 0.22; }
-  .b4 { width: 180px; height: 180px; background: #7a9ba8; bottom: 25%; left: 15%; animation: floatB 20s infinite ease-in-out; opacity: 0.2; }
+  @keyframes floatA { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(50px, 35px) scale(1.05); } }
+  @keyframes floatB { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-40px, -45px) scale(1.08); } }
 
-  @keyframes floatA {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(50px, 35px) scale(1.05); }
-  }
-  @keyframes floatB {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(-40px, -45px) scale(1.08); }
-  }
-
-  .vignette {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 45%, rgba(8, 10, 7, 0.55) 100%);
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  .scene {
-    perspective: 1400px;
-    position: relative;
-    z-index: 1;
-    transform: scale(var(--console-scale));
-    transform-origin: center center;
-  }
+  .vignette { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(8, 10, 7, 0.55) 100%); pointer-events: none; z-index: 2; }
+  .scene { perspective: 1400px; position: relative; z-index: 1; transform: scale(var(--console-scale)); transform-origin: center center; }
 
   .console {
-    width: 700px;
-    height: 720px;
-    background: linear-gradient(145deg, 
-      rgba(245, 240, 230, 0.22) 0%,
-      rgba(152, 183, 140, 0.28) 35%,
-      rgba(106, 142, 96, 0.32) 70%,
-      rgba(92, 122, 82, 0.25) 100%);
+    width: 680px;
+    height: 760px;
+    background: linear-gradient(145deg, rgba(245, 240, 230, 0.22) 0%, rgba(152, 183, 140, 0.28) 35%, rgba(106, 142, 96, 0.32) 70%, rgba(92, 122, 82, 0.25) 100%);
     backdrop-filter: blur(18px) saturate(1.15);
     -webkit-backdrop-filter: blur(18px) saturate(1.15);
     border-radius: 32px;
     border: 1.5px solid rgba(255, 255, 255, 0.35);
-    box-shadow:
-      0 0 80px rgba(152, 183, 140, 0.28),
-      0 0 140px rgba(212, 168, 75, 0.08),
-      0 40px 80px var(--shadow-deep),
-      0 18px 30px rgba(0, 0, 0, 0.35),
-      inset 0 2px 4px rgba(255, 255, 255, 0.45),
-      inset 0 -3px 8px rgba(40, 50, 35, 0.18);
+    box-shadow: 0 0 80px rgba(152, 183, 140, 0.28), 0 0 140px rgba(212, 168, 75, 0.08), 0 40px 80px var(--shadow-deep), 0 16px 32px rgba(0, 0, 0, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.45), inset 0 -3px 8px rgba(40, 50, 35, 0.18);
     display: flex;
     flex-direction: column;
     padding: 28px 36px 32px;
@@ -115,35 +70,22 @@
     transform-style: preserve-3d;
   }
 
-  .top-section {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 18px;
-  }
+  .top-section { display: flex; justify-content: center; margin-bottom: 18px; }
 
   .screen-bezel {
     background: linear-gradient(160deg, #1c1c1a 0%, #0e0e0c 100%);
-    border-radius: 16px;
-    padding: 18px;
-    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.85), 0 3px 0 rgba(255, 255, 255, 0.12);
-    width: 460px;
-    height: 340px;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: inset 0 4px 16px rgba(0, 0, 0, 0.85), 0 3px 0 rgba(255, 255, 255, 0.12);
+    width: 420px;
+    height: 315px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  .screen-lcd {
-    width: 100%;
-    height: 100%;
-    background: var(--lcd-green);
-    border-radius: 8px;
-    position: relative;
-    overflow: hidden;
-    animation: screenTurnOn 0.8s ease-out;
-  }
+  .screen-lcd { width: 100%; height: 100%; background: var(--lcd-green); border-radius: 6px; position: relative; overflow: hidden; animation: screenTurnOn 0.8s ease-out; }
 
-  /* Эффект включения экрана */
   @keyframes screenTurnOn {
     0% { transform: scale(0, 0.01); opacity: 0; filter: brightness(3); }
     30% { transform: scale(1, 0.01); opacity: 1; filter: brightness(3); }
@@ -151,270 +93,58 @@
     100% { transform: scale(1, 1); opacity: 1; filter: brightness(1); }
   }
 
-  /* Блик стекла на экране */
-  .screen-lcd::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
-    pointer-events: none;
-    z-index: 3;
-    border-radius: 8px 8px 0 0;
-  }
+  .screen-lcd::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent); pointer-events: none; z-index: 3; border-radius: 6px 6px 0 0; }
 
-  #canvas {
-    width: 100%;
-    height: 100%;
-    image-rendering: pixelated;
-    image-rendering: crisp-edges;
-    position: relative;
-    z-index: 1;
-  }
+  #canvas { width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; position: relative; z-index: 1; }
+  .scanlines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(15, 56, 15, 0.09) 2px, rgba(15, 56, 15, 0.09) 4px); pointer-events: none; z-index: 2; animation: flicker 0.1s infinite; }
+  @keyframes flicker { 0% { opacity: 0.95; } 50% { opacity: 1; } 100% { opacity: 0.98; } }
 
-  .scanlines {
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(15, 56, 15, 0.09) 2px, rgba(15, 56, 15, 0.09) 4px);
-    pointer-events: none;
-    z-index: 2;
-    animation: flicker 0.1s infinite;
-  }
-
-  @keyframes flicker {
-    0% { opacity: 0.95; }
-    50% { opacity: 1; }
-    100% { opacity: 0.98; }
-  }
-
-  .bottom-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .controls-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 12px;
-    margin-top: 22px;
-  }
+  .bottom-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .controls-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 0 10px; margin-top: 20px; }
 
   /* D-PAD */
-  .dpad {
-    position: relative;
-    width: 176px;
-    height: 176px;
-  }
-
-  .d-btn {
-    position: absolute;
-    width: 54px;
-    height: 54px;
-    border: none;
-    border-radius: 14px;
-    cursor: pointer;
-    background: linear-gradient(160deg, #3a4636 0%, #2a3228 100%);
-    box-shadow: 0 4px 0 #1a2118, 0 6px 12px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.12);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-  }
-
-  .d-btn::after {
-    content: '';
-    width: 0;
-    height: 0;
-    border-style: solid;
-    opacity: 0.75;
-  }
-
-  .d-up { top: 0; left: 61px; }
-  .d-up::after { border-width: 0 9px 12px 9px; border-color: transparent transparent #c8d4b8 transparent; }
-
-  .d-left { top: 61px; left: 0; }
-  .d-left::after { border-width: 9px 12px 9px 0; border-color: transparent #c8d4b8 transparent transparent; }
-
-  .d-right { top: 61px; left: 122px; }
-  .d-right::after { border-width: 9px 0 9px 12px; border-color: transparent transparent transparent #c8d4b8; }
-
-  .d-down { top: 122px; left: 61px; }
-  .d-down::after { border-width: 12px 9px 0 9px; border-color: #c8d4b8 transparent transparent transparent; }
-
-  .d-btn.pressed {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 #1a2118, inset 0 2px 4px rgba(0,0,0,0.4);
-    filter: brightness(0.85);
-  }
+  .dpad { position: relative; width: 160px; height: 160px; }
+  .d-btn { position: absolute; width: 52px; height: 52px; border: none; border-radius: 12px; cursor: pointer; background: linear-gradient(160deg, #3a4636 0%, #2a3228 100%); box-shadow: 0 4px 0 #1a2118, 0 6px 12px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .d-btn::after { content: ''; width: 0; height: 0; border-style: solid; opacity: 0.75; }
+  .d-up { top: 0; left: 54px; } .d-up::after { border-width: 0 8px 11px 8px; border-color: transparent transparent #c8d4b8 transparent; }
+  .d-left { top: 54px; left: 0; } .d-left::after { border-width: 8px 11px 8px 0; border-color: transparent #c8d4b8 transparent transparent; }
+  .d-right { top: 54px; left: 108px; } .d-right::after { border-width: 8px 0 8px 11px; border-color: transparent transparent transparent #c8d4b8; }
+  .d-down { top: 108px; left: 54px; } .d-down::after { border-width: 11px 8px 0 8px; border-color: #c8d4b8 transparent transparent transparent; }
+  .d-btn.pressed { transform: translateY(3px); box-shadow: 0 1px 0 #1a2118, inset 0 2px 4px rgba(0,0,0,0.4); filter: brightness(0.85); }
 
   /* A / B */
-  .ab-group {
-    display: flex;
-    gap: 32px;
-    align-items: center;
-    transform: rotate(-14deg);
-  }
-
-  .ab-btn {
-    width: 78px;
-    height: 78px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 18px;
-    color: rgba(255, 245, 230, 0.9);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-  }
-
-  .btn-a {
-    background: linear-gradient(150deg, #d48a6a 0%, #b86a4a 100%);
-    box-shadow: 0 6px 0 #7a3e2a, 0 10px 20px rgba(120, 50, 30, 0.35), inset 0 2px 3px rgba(255,220,190,0.35);
-  }
-
-  .btn-b {
-    background: linear-gradient(150deg, #c48a8a 0%, #a86868 100%);
-    box-shadow: 0 6px 0 #6e3a3a, 0 10px 20px rgba(100, 40, 40, 0.3), inset 0 2px 3px rgba(255,210,210,0.3);
-  }
-
-  .ab-btn.pressed {
-    transform: translateY(4px);
-    filter: brightness(0.9);
-  }
+  .ab-group { display: flex; gap: 28px; align-items: center; transform: rotate(-14deg); }
+  .ab-btn { width: 72px; height: 72px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Press Start 2P', monospace; font-size: 16px; color: rgba(255, 245, 230, 0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.4); touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .btn-a { background: linear-gradient(150deg, #d48a6a 0%, #b86a4a 100%); box-shadow: 0 5px 0 #7a3e2a, 0 8px 16px rgba(120, 50, 30, 0.35), inset 0 2px 3px rgba(255,220,190,0.35); }
+  .btn-b { background: linear-gradient(150deg, #c48a8a 0%, #a86868 100%); box-shadow: 0 5px 0 #6e3a3a, 0 8px 16px rgba(100, 40, 40, 0.3), inset 0 2px 3px rgba(255,210,210,0.3); }
+  .ab-btn.pressed { transform: translateY(4px); filter: brightness(0.9); }
 
   /* SELECT / START */
-  .ss-group {
-    display: flex;
-    gap: 36px;
-    justify-content: center;
-    margin-top: 18px;
-  }
+  .ss-group { display: flex; gap: 28px; justify-content: center; margin-top: 18px; }
+  .ss-btn { width: 108px; height: 38px; border: none; border-radius: 19px; cursor: pointer; background: linear-gradient(180deg, #e8dfd0 0%, #d4c8b4 100%); box-shadow: 0 4px 0 #b8a890, inset 0 1px 2px rgba(255,255,255,0.6); font-family: 'Press Start 2P', monospace; font-size: 8px; color: #5a5040; letter-spacing: 1px; text-transform: uppercase; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .ss-btn.pressed { transform: translateY(3px); box-shadow: 0 1px 0 #b8a890, inset 0 2px 4px rgba(0,0,0,0.15); }
 
-  .ss-btn {
-    width: 118px;
-    height: 42px;
-    border: none;
-    border-radius: 22px;
-    cursor: pointer;
-    background: linear-gradient(180deg, #e8dfd0 0%, #d4c8b4 100%);
-    box-shadow: 0 4px 0 #b8a890, inset 0 1px 2px rgba(255,255,255,0.6);
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    color: #5a5040;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-  }
+  .footer { display: flex; justify-content: space-between; align-items: center; padding: 0 8px; margin-top: 16px; }
+  .footer-text { font-family: 'VT323', monospace; font-size: 16px; color: rgba(245, 240, 230, 0.65); letter-spacing: 1.5px; cursor: pointer; }
+  .battery-icon { width: 30px; height: 14px; border: 1.5px solid rgba(245, 240, 230, 0.5); border-radius: 3px; padding: 2px; position: relative; }
+  .battery-icon::after { content: ''; position: absolute; right: -4px; top: 3px; width: 3px; height: 6px; background: rgba(245, 240, 230, 0.5); border-radius: 0 1px 1px 0; }
+  .battery-fill { width: 72%; height: 100%; background: linear-gradient(90deg, #98b78c, #b8d4a8); border-radius: 1px; }
 
-  .ss-btn.pressed {
-    transform: translateY(3px);
-    box-shadow: 0 1px 0 #b8a890, inset 0 2px 4px rgba(0,0,0,0.15);
-  }
-
-  .footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 6px;
-    margin-top: 18px;
-  }
-
-  .footer-text {
-    font-family: 'VT323', monospace;
-    font-size: 17px;
-    color: rgba(245, 240, 230, 0.65);
-    letter-spacing: 1.5px;
-    cursor: pointer;
-  }
-
-  .battery-icon {
-    width: 34px;
-    height: 15px;
-    border: 1.5px solid rgba(245, 240, 230, 0.5);
-    border-radius: 3px;
-    padding: 2px;
-    position: relative;
-  }
-
-  .battery-icon::after {
-    content: '';
-    position: absolute;
-    right: -5px;
-    top: 3.5px;
-    width: 3px;
-    height: 7px;
-    background: rgba(245, 240, 230, 0.5);
-    border-radius: 0 1px 1px 0;
-  }
-
-  .battery-fill {
-    width: 72%;
-    height: 100%;
-    background: linear-gradient(90deg, #98b78c, #b8d4a8);
-    border-radius: 1px;
-  }
-
-  /* ========== MOBILE ========== */
-  @media (max-width: 760px) { :root { --console-scale: 0.80; } }
-  @media (max-width: 620px) { :root { --console-scale: 0.72; } }
-  @media (max-width: 520px) {
-    :root { --console-scale: 0.64; }
-    .console { width: 650px; padding: 12px 14px 14px; border-radius: 22px; }
-    .screen-bezel { width: 420px; height: 300px; padding: 10px; }
-    .controls-wrapper { justify-content: center; gap: 20px; padding: 0 6px; margin-top: 10px; }
-    .dpad { width: 152px; height: 152px; flex-shrink: 0; }
-    .d-btn { width: 54px; height: 54px; border-radius: 13px; }
-    .d-up    { top: 0;     left: 49px; }
-    .d-left  { top: 49px;  left: 0; }
-    .d-right { top: 49px;  left: 98px; }
-    .d-down  { top: 98px;  left: 49px; }
-    .d-up::after    { border-width: 0 10px 13px 10px; }
-    .d-left::after  { border-width: 10px 13px 10px 0; }
-    .d-right::after { border-width: 10px 0 10px 13px; }
-    .d-down::after  { border-width: 13px 10px 0 10px; }
-    .ab-group { gap: 12px; transform: rotate(-7deg); }
-    .ab-btn { width: 66px; height: 66px; font-size: 15px; }
-    .ss-group { gap: 16px; margin-top: 11px; }
-    .ss-btn { width: 108px; height: 42px; font-size: 8px; }
-    .footer { margin-top: 10px; }
-    .footer-text { font-size: 12px; }
-  }
-  @media (max-width: 420px) {
-    :root { --console-scale: 0.57; }
-    .console { width: 630px; padding: 10px 12px 12px; }
-    .screen-bezel { width: 400px; height: 285px; }
-    .dpad { width: 144px; height: 144px; }
-    .d-btn { width: 50px; height: 50px; }
-    .d-up    { left: 47px; }
-    .d-left  { top: 47px; }
-    .d-right { top: 47px; left: 94px; }
-    .d-down  { top: 94px; left: 47px; }
-    .ab-btn { width: 62px; height: 62px; font-size: 14px; }
-    .ss-btn { width: 100px; height: 40px; }
-  }
-  @media (max-width: 360px) { :root { --console-scale: 0.51; } }
-  @media (max-height: 780px) { :root { --console-scale: 0.66; } }
-  @media (max-height: 720px) { :root { --console-scale: 0.59; } }
-  @media (max-height: 680px) { :root { --console-scale: 0.54; } }
-  @media (max-height: 640px) { :root { --console-scale: 0.49; } }
-  @media (max-height: 600px) { :root { --console-scale: 0.45; } }
-  @media (max-height: 500px) and (orientation: landscape) { :root { --console-scale: 0.50; } }
-  @media (max-height: 450px) and (orientation: landscape) { :root { --console-scale: 0.43; } }
+  /* Модальное окно Teacher's Mode */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
+  .modal-overlay.active { display: flex; }
+  
+  .modal-content { background: linear-gradient(145deg, #F5F0E6, #E8DFD0); border: 4px solid #6A8E60; border-radius: 16px; padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 0 40px rgba(152, 183, 140, 0.5); font-family: 'VT323', monospace; color: #2a3228; }
+  .modal-content h2 { font-family: 'Press Start 2P', monospace; font-size: 12px; color: #5C7A52; margin-bottom: 12px; text-align: center; }
+  .modal-content p { font-size: 14px; margin-bottom: 6px; line-height: 1.3; }
+  .modal-content code { background: #d4c8b4; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+  .modal-content textarea { width: 100%; height: 100px; background: #0F380F; color: #9BBC0F; border: 2px solid #5C7A52; border-radius: 8px; padding: 10px; font-family: 'VT323', monospace; font-size: 14px; margin: 10px 0; resize: vertical; line-height: 1.2; }
+  .modal-buttons { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; }
+  .modal-btn { flex: 1; padding: 10px; border: none; border-radius: 8px; font-family: 'Press Start 2P', monospace; font-size: 9px; cursor: pointer; text-transform: uppercase; transition: transform 0.1s; }
+  .modal-btn:active { transform: translateY(2px); }
+  .btn-save { background: #98B78C; color: #0F380F; box-shadow: 0 4px 0 #6A8E60; }
+  .btn-clear { background: #C47A5A; color: #FFF; box-shadow: 0 4px 0 #7a3e2a; }
+  .btn-cancel { background: #E8DFD0; color: #2a3228; box-shadow: 0 4px 0 #b8a890; }
 </style>
 </head>
 <body>
@@ -432,7 +162,7 @@
     <div class="top-section">
       <div class="screen-bezel">
         <div class="screen-lcd">
-          <canvas id="canvas" width="440" height="330"></canvas>
+          <canvas id="canvas" width="420" height="315"></canvas>
           <div class="scanlines"></div>
         </div>
       </div>
@@ -459,7 +189,7 @@
       </div>
 
       <div class="footer">
-        <span class="footer-text">KOD_LINGVOKVESTA OS 1.1</span>
+        <span class="footer-text">KOD_LINGVOKVESTA OS 1.5</span>
         <div class="battery">
           <div class="battery-icon"><div class="battery-fill"></div></div>
         </div>
@@ -469,12 +199,31 @@
   </div>
 </div>
 
+<!-- Модальное окно для Teacher's Mode -->
+<div id="teacherModal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>TEACHER'S MODE</h2>
+    <p>Enter your sentences. Use the format:</p>
+    <p style="text-align: center;"><code>Text ___ | Answer | Full | Pronoun</code></p>
+    <p style="font-size: 12px; color: #7a6a5a;">Example: <code>She ___ a doctor. | IS | She is a doctor. | SHE</code></p>
+    <textarea id="customSentencesInput" placeholder="I ___ a cat. | AM | I am a cat. | I&#10;He ___ a dog. | IS | He is a dog. | HE"></textarea>
+    <div class="modal-buttons">
+      <button class="modal-btn btn-clear" id="clearCustomBtn">Clear</button>
+      <button class="modal-btn btn-cancel" id="cancelCustomBtn">Cancel</button>
+      <button class="modal-btn btn-save" id="saveCustomBtn">Save & Play</button>
+    </div>
+  </div>
+</div>
+
 <script>
 'use strict';
 
-const W = 440, H = 330, CELL = 22;
+const IS_FULL_VERSION = true;
+
+// Уменьшенное разрешение Canvas (420x315) для соответствия новому размеру экрана
+const W = 420, H = 315, CELL = 21;
 const GRID_COLS = 18, GRID_ROWS = 10;
-const GRID_X = 22, GRID_Y = 90;
+const GRID_X = 21, GRID_Y = 45;
 const MOVE_BASE = 280;
 const QUESTIONS_PER_LEVEL = 8;
 
@@ -527,26 +276,10 @@ const Storage = {
 
 const Sound = {
   ctx: null, enabled: true,
-  init() {
-    this.enabled = Storage.get('sound', true);
-    this.updateLabel();
-  },
-  updateLabel() {
-    const el = document.getElementById('soundToggle');
-    if (el) el.textContent = 'SOUND: ' + (this.enabled ? 'ON' : 'OFF');
-  },
-  ensure() {
-    if (!this.ctx) {
-      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { this.ctx = null; }
-    }
-    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
-  },
-  toggle() {
-    this.enabled = !this.enabled;
-    Storage.set('sound', this.enabled);
-    this.updateLabel();
-    if (this.enabled) this.play('click');
-  },
+  init() { this.enabled = Storage.get('sound', true); this.updateLabel(); },
+  updateLabel() { const el = document.getElementById('soundToggle'); if (el) el.textContent = 'SOUND: ' + (this.enabled ? 'ON' : 'OFF'); },
+  ensure() { if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { this.ctx = null; } } if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
+  toggle() { this.enabled = !this.enabled; Storage.set('sound', this.enabled); this.updateLabel(); if (this.enabled) this.play('click'); },
   play(type) {
     if (!this.enabled) return;
     this.ensure();
@@ -573,44 +306,18 @@ const Sound = {
   }
 };
 
-const Haptics = {
-  vibrate(pattern) {
-    if (navigator.vibrate) {
-      navigator.vibrate(pattern);
-    }
-  }
-}
+const Haptics = { vibrate(p) { if (navigator.vibrate) navigator.vibrate(p); } }
 
 const Input = {
   handlers: {},
   init() {
-    const keymap = {
-      'ArrowUp':'up','ArrowDown':'down','ArrowLeft':'left','ArrowRight':'right',
-      'z':'a','Z':'a','x':'b','X':'b','Enter':'start','Shift':'select',' ':'start'
-    };
-
-    document.addEventListener('keydown', e => {
-      if (e.repeat) return;
-      const a = keymap[e.key];
-      if (a) { e.preventDefault(); this.trigger(a); }
-    });
+    const keymap = { 'ArrowUp':'up','ArrowDown':'down','ArrowLeft':'left','ArrowRight':'right','z':'a','Z':'a','x':'b','X':'b','Enter':'start','Shift':'select',' ':'start' };
+    document.addEventListener('keydown', e => { if (e.repeat) return; const a = keymap[e.key]; if (a) { e.preventDefault(); this.trigger(a); } });
 
     document.querySelectorAll('[data-key]').forEach(btn => {
       const key = btn.dataset.key;
-
-      const onDown = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (btn.classList.contains('pressed')) return;
-        btn.classList.add('pressed');
-        this.trigger(key);
-      };
-
-      const onUp = (e) => {
-        e.preventDefault();
-        btn.classList.remove('pressed');
-      };
-
+      const onDown = (e) => { e.preventDefault(); e.stopPropagation(); if (btn.classList.contains('pressed')) return; btn.classList.add('pressed'); this.trigger(key); };
+      const onUp = (e) => { e.preventDefault(); btn.classList.remove('pressed'); };
       btn.addEventListener('pointerdown', onDown, { passive: false });
       btn.addEventListener('pointerup', onUp, { passive: false });
       btn.addEventListener('pointerleave', onUp, { passive: false });
@@ -619,40 +326,26 @@ const Input = {
     });
 
     document.getElementById('soundToggle').addEventListener('click', () => Sound.toggle());
-    
-    // Авто-пауза при сворачивании вкладки
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && S.screen === 'PLAYING') {
-        S.screen = 'PAUSED';
-      }
-    });
+    document.addEventListener('visibilitychange', () => { if (document.hidden && S.screen === 'PLAYING') S.screen = 'PAUSED'; });
   },
-  on(action, cb) {
-    (this.handlers[action] || (this.handlers[action] = [])).push(cb);
-  },
+  on(action, cb) { (this.handlers[action] || (this.handlers[action] = [])).push(cb); },
   trigger(action) {
-    if (this.handlers[action]) {
-      this.handlers[action].forEach(cb => cb());
-    }
-    if (Sound.enabled) {
-      requestAnimationFrame(() => {
-        if (action === 'up' || action === 'down' || action === 'left' || action === 'right') Sound.play('move');
-        else Sound.play('click');
-      });
-    }
+    if (this.handlers[action]) { this.handlers[action].forEach(cb => cb()); }
+    if (Sound.enabled) { requestAnimationFrame(() => { if (action === 'up' || action === 'down' || action === 'left' || action === 'right') Sound.play('move'); else Sound.play('click'); }); }
   }
 };
 
 const S = {
   screen: 'BOOT', bootTime: 0,
-  menuIndex: 0, gameIndex: 0, levelIndex: 0,
+  menuIndex: 0, levelIndex: 0,
   unlockedLevels: 1, highScore: 0,
   level: 1, score: 0, lives: 3, caseNum: 1, correctCount: 0,
   questions: [], questionIdx: 0, currentQuestion: null,
   snake: [], dir: {x:1,y:0}, nextDir: {x:1,y:0},
   food: [], lastMove: 0, moveInterval: MOVE_BASE,
   timer: 0, maxTimer: 22000,
-  fbTime: 0, fbData: null
+  fbTime: 0, fbData: null,
+  customSentences: [], isCustomMode: false
 };
 
 const cv = document.getElementById('canvas');
@@ -660,55 +353,12 @@ const ctx = cv.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
 function clearScreen() { ctx.fillStyle = C_LCD_BG; ctx.fillRect(0,0,W,H); }
-function txt(t,x,y,c,s,a) {
-  ctx.fillStyle = c || C_LCD_DARK;
-  ctx.font = `${s||14}px "Press Start 2P", monospace`;
-  ctx.textAlign = a || 'left'; ctx.textBaseline = 'top';
-  ctx.fillText(t,x,y);
-}
-function ptxt(t,x,y,c,s) {
-  ctx.font = `${s}px "Press Start 2P", monospace`;
-  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
-  ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillText(t,x+2,y+2);
-  ctx.fillStyle = c; ctx.fillText(t,x,y);
-}
-function ptxtC(t,y,c,s) {
-  ctx.font = `${s}px "Press Start 2P", monospace`;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillText(t,W/2+2,y+2);
-  ctx.fillStyle = c; ctx.fillText(t,W/2,y);
-}
-function drawDynamicText(t, y, c, baseSize) {
-  let fs = baseSize;
-  ctx.font = `${fs}px "Press Start 2P", monospace`;
-  let tw = ctx.measureText(t).width;
-  while (tw > W - 40 && fs > 8) {
-    fs--;
-    ctx.font = `${fs}px "Press Start 2P", monospace`;
-    tw = ctx.measureText(t).width;
-  }
-  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillText(t, W/2+2, y+2);
-  ctx.fillStyle = c; ctx.fillText(t, W/2, y);
-}
-function roundRect(x,y,w,h,r) {
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.lineTo(x+w-r,y);
-  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-  ctx.lineTo(x+w,y+h-r);
-  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h);
-  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r);
-  ctx.quadraticCurveTo(x,y,x+r,y);
-  ctx.closePath();
-}
-function drawPixelBlock(x,y,w,h) {
-  ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x,y,w,h);
-  ctx.fillStyle = C_LCD_BG; ctx.fillRect(x+2,y+2,w-4,h-4);
-  ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x+4,y+3,w-8,h-6);
-}
+function txt(t,x,y,c,s,a) { ctx.fillStyle = c || C_LCD_DARK; ctx.font = `${s||12}px "Press Start 2P", monospace`; ctx.textAlign = a || 'left'; ctx.textBaseline = 'top'; ctx.fillText(t,x,y); }
+function ptxt(t,x,y,c,s) { ctx.font = `${s}px "Press Start 2P", monospace`; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillText(t,x+1,y+1); ctx.fillStyle = c; ctx.fillText(t,x,y); }
+function ptxtC(t,y,c,s) { ctx.font = `${s}px "Press Start 2P", monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillText(t,W/2+1,y+1); ctx.fillStyle = c; ctx.fillText(t,W/2,y); }
+function drawDynamicText(t, y, c, baseSize) { let fs = baseSize; ctx.font = `${fs}px "Press Start 2P", monospace`; let tw = ctx.measureText(t).width; while (tw > W - 30 && fs > 8) { fs--; ctx.font = `${fs}px "Press Start 2P", monospace`; tw = ctx.measureText(t).width; } ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillText(t, W/2+1, y+1); ctx.fillStyle = c; ctx.fillText(t, W/2, y); }
+function roundRect(x,y,w,h,r) { ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r); ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h); ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r); ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath(); }
+function drawPixelBlock(x,y,w,h) { ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x,y,w,h); ctx.fillStyle = C_LCD_BG; ctx.fillRect(x+2,y+2,w-4,h-4); ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x+4,y+3,w-8,h-6); }
 
 const Snake = {
   init(level) {
@@ -718,457 +368,161 @@ const Snake = {
     this.startQ();
   },
   pickQ(level) {
-    const p = [...SENTENCES[level]];
-    for (let i = p.length-1; i > 0; i--) {
-      const j = Math.floor(Math.random()*(i+1));
-      [p[i], p[j]] = [p[j], p[i]];
+    let pool = [];
+    if (S.isCustomMode && S.customSentences.length > 0) {
+      pool = [...S.customSentences];
+    } else {
+      pool = [...SENTENCES[level]];
     }
-    return p.slice(0, QUESTIONS_PER_LEVEL);
+    for (let i = pool.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+    const limit = S.isCustomMode ? pool.length : QUESTIONS_PER_LEVEL;
+    return pool.slice(0, limit);
   },
-  startQ() {
-    S.currentQuestion = S.questions[S.questionIdx];
-    const sx = Math.floor(GRID_COLS/2)-1, sy = Math.floor(GRID_ROWS/2);
-    S.snake = [{x:sx,y:sy},{x:sx-1,y:sy},{x:sx-2,y:sy}];
-    S.dir = {x:1,y:0}; S.nextDir = {x:1,y:0};
-    this.spawnFood();
-    S.timer = S.maxTimer; S.screen = 'QUESTION_INTRO'; S.fbTime = 0;
-  },
+  startQ() { S.currentQuestion = S.questions[S.questionIdx]; const sx = Math.floor(GRID_COLS/2)-1, sy = Math.floor(GRID_ROWS/2); S.snake = [{x:sx,y:sy},{x:sx-1,y:sy},{x:sx-2,y:sy}]; S.dir = {x:1,y:0}; S.nextDir = {x:1,y:0}; this.spawnFood(); S.timer = S.maxTimer; S.screen = 'QUESTION_INTRO'; S.fbTime = 0; },
   spawnFood() {
     const correctWord = S.currentQuestion.answer;
     const wrongWords = ['AM','IS','ARE'].filter(w => w !== correctWord);
     let words = [correctWord, wrongWords[0], wrongWords[1]];
-    for (let i = words.length-1; i > 0; i--) {
-      const j = Math.floor(Math.random()*(i+1));
-      [words[i], words[j]] = [words[j], words[i]];
-    }
-    const occ = new Set();
-    S.snake.forEach(s => occ.add(s.x+','+s.y));
+    for (let i = words.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [words[i], words[j]] = [words[j], words[i]]; }
+    const occ = new Set(); S.snake.forEach(s => occ.add(s.x+','+s.y));
     const validPositions = [];
-    for (let y = 0; y < GRID_ROWS; y++) {
-      for (let x = 0; x < GRID_COLS-1; x++) {
-        if (occ.has(x+','+y) || occ.has((x+1)+','+y)) continue;
-        validPositions.push({x,y});
-      }
-    }
-    for (let i = validPositions.length-1; i > 0; i--) {
-      const j = Math.floor(Math.random()*(i+1));
-      [validPositions[i], validPositions[j]] = [validPositions[j], validPositions[i]];
-    }
+    for (let y = 0; y < GRID_ROWS; y++) { for (let x = 0; x < GRID_COLS-1; x++) { if (occ.has(x+','+y) || occ.has((x+1)+','+y)) continue; validPositions.push({x,y}); } }
+    for (let i = validPositions.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [validPositions[i], validPositions[j]] = [validPositions[j], validPositions[i]]; }
     const pos = [];
-    for (const p of validPositions) {
-      if (pos.length >= 3) break;
-      let overlap = false;
-      for (const sp of pos) {
-        if (sp.y === p.y && Math.abs(sp.x - p.x) <= 1) { overlap = true; break; }
-      }
-      if (!overlap) pos.push(p);
-    }
-    while (pos.length < 3) {
-      const rx = Math.floor(Math.random()*(GRID_COLS-1));
-      const ry = Math.floor(Math.random()*GRID_ROWS);
-      if (!pos.some(sp => sp.x === rx && sp.y === ry)) pos.push({x:rx,y:ry});
-    }
-    S.food = pos.map((p,i) => ({
-      x: p.x, y: p.y, word: words[i], isCorrect: words[i] === S.currentQuestion.answer
-    }));
+    for (const p of validPositions) { if (pos.length >= 3) break; let overlap = false; for (const sp of pos) { if (sp.y === p.y && Math.abs(sp.x - p.x) <= 1) { overlap = true; break; } } if (!overlap) pos.push(p); }
+    while (pos.length < 3) { const rx = Math.floor(Math.random()*(GRID_COLS-1)); const ry = Math.floor(Math.random()*GRID_ROWS); if (!pos.some(sp => sp.x === rx && sp.y === ry)) pos.push({x:rx,y:ry}); }
+    S.food = pos.map((p,i) => ({ x: p.x, y: p.y, word: words[i], isCorrect: words[i] === S.currentQuestion.answer }));
   },
-  setDir(dx, dy) {
-    if (S.dir.x === -dx && S.dir.y === -dy) return;
-    if (S.dir.x === dx && S.dir.y === dy) return;
-    S.nextDir = {x:dx, y:dy};
-  },
+  setDir(dx, dy) { if (S.dir.x === -dx && S.dir.y === -dy) return; if (S.dir.x === dx && S.dir.y === dy) return; S.nextDir = {x:dx, y:dy}; },
   update(ts) {
     if (S.screen !== 'PLAYING') return;
     if (ts - S.lastMove >= S.moveInterval) {
-      S.dir = S.nextDir;
-      const h = S.snake[0];
+      S.dir = S.nextDir; const h = S.snake[0];
       const nh = {x: (h.x + S.dir.x + GRID_COLS) % GRID_COLS, y: (h.y + S.dir.y + GRID_ROWS) % GRID_ROWS};
-      for (let i = 1; i < S.snake.length; i++) {
-        if (S.snake[i].x === nh.x && S.snake[i].y === nh.y) {
-          this.handleWrong(null);
-          return;
-        }
-      }
+      for (let i = 1; i < S.snake.length; i++) { if (S.snake[i].x === nh.x && S.snake[i].y === nh.y) { this.handleWrong(null); return; } }
       let eaten = null;
-      for (const f of S.food) {
-        if (nh.y === f.y && (nh.x === f.x || nh.x === f.x+1)) { eaten = f; break; }
-      }
+      for (const f of S.food) { if (nh.y === f.y && (nh.x === f.x || nh.x === f.x+1)) { eaten = f; break; } }
       S.snake.unshift(nh);
-      if (eaten) { Sound.play('eat'); this.checkAnswer(eaten); }
-      else S.snake.pop();
+      if (eaten) { Sound.play('eat'); this.checkAnswer(eaten); } else S.snake.pop();
       S.lastMove = ts;
     }
-    S.timer -= 16;
-    if (S.timer <= 0) this.handleWrong(null);
+    S.timer -= 16; if (S.timer <= 0) this.handleWrong(null);
   },
-  checkAnswer(f) {
-    S.food = S.food.filter(x => x !== f);
-    if (f.isCorrect) this.handleCorrect();
-    else this.handleWrong(f);
-  },
-  handleCorrect() {
-    S.score += 100; S.correctCount++; S.caseNum++;
-    Sound.play('correct');
-    Haptics.vibrate(30); // Вибрация при правильном ответе
-    S.screen = 'CORRECT'; S.fbTime = 0; S.fbData = {score:100};
-  },
-  handleWrong(f) {
-    S.lives--; S.caseNum++;
-    Sound.play('wrong');
-    Haptics.vibrate([50, 50, 50]); // Вибрация при ошибке
-    S.screen = 'WRONG'; S.fbTime = 0;
-    const q = S.currentQuestion;
-    S.fbData = {chosen: f ? f.word : '---', correct: q.answer, pronoun: q.pronoun, full: q.full, timeout: !f};
-  },
+  checkAnswer(f) { S.food = S.food.filter(x => x !== f); if (f.isCorrect) this.handleCorrect(); else this.handleWrong(f); },
+  handleCorrect() { S.score += 100; S.correctCount++; S.caseNum++; Sound.play('correct'); Haptics.vibrate(30); S.screen = 'CORRECT'; S.fbTime = 0; S.fbData = {score:100}; },
+  handleWrong(f) { S.lives--; S.caseNum++; Sound.play('wrong'); Haptics.vibrate([50, 50, 50]); S.screen = 'WRONG'; S.fbTime = 0; const q = S.currentQuestion; S.fbData = {chosen: f ? f.word : '---', correct: q.answer, pronoun: q.pronoun, full: q.full, timeout: !f}; },
   nextQ() {
     S.questionIdx++; S.caseNum++;
     if (S.questionIdx >= S.questions.length) {
-      const nl = S.level + 1;
-      if (nl <= 3) {
-        if (nl > S.unlockedLevels) { S.unlockedLevels = nl; Storage.set('unlockedLevels', nl); }
-        Sound.play('levelUp');
-        S.level = nl; S.questions = this.pickQ(nl); S.questionIdx = 0;
-        S.moveInterval = MOVE_BASE - (nl-1)*20;
-        S.screen = 'LEVEL_INTRO'; S.fbTime = 0;
-      } else {
+      if (S.isCustomMode) {
         Sound.play('caseComplete');
         if (S.score > S.highScore) { S.highScore = S.score; Storage.set('highScore', S.score); }
         S.screen = 'CASE_COMPLETE'; S.fbTime = 0;
+      } else {
+        const nl = S.level + 1;
+        if (nl <= 3) {
+          if (nl > S.unlockedLevels) { S.unlockedLevels = nl; Storage.set('unlockedLevels', nl); }
+          Sound.play('levelUp');
+          S.level = nl; S.questions = this.pickQ(nl); S.questionIdx = 0;
+          S.moveInterval = MOVE_BASE - (nl-1)*20;
+          S.screen = 'LEVEL_INTRO'; S.fbTime = 0;
+        } else {
+          Sound.play('caseComplete');
+          if (S.score > S.highScore) { S.highScore = S.score; Storage.set('highScore', S.score); }
+          S.screen = 'CASE_COMPLETE'; S.fbTime = 0;
+        }
       }
     } else this.startQ();
   },
-  drawHUD() {
-    ptxt('SCORE:' + String(S.score).padStart(4,'0'), 22, 15, C_LCD_DARK, 12);
-    let lv = '';
-    for (let i = 0; i < 3; i++) lv += i < S.lives ? '♥ ' : '♡ ';
-    ptxt(lv, 200, 15, C_LCD_DARK, 12);
-    ptxt('LVL:' + S.caseNum, W-100, 15, C_LCD_DARK, 12);
-  },
-  drawSentence() {
-    if (!S.currentQuestion) return;
-    drawDynamicText(S.currentQuestion.text, 45, C_LCD_DARK, 14);
-  },
-  drawGrid() {
-    ctx.strokeStyle = C_LCD_DARK; ctx.lineWidth = 2;
-    ctx.strokeRect(GRID_X-2, GRID_Y-2, GRID_COLS*CELL+4, GRID_ROWS*CELL+4);
-  },
-  drawFood() {
-    for (const f of S.food) {
-      const x = GRID_X + f.x*CELL, y = GRID_Y + f.y*CELL, w = CELL*2, h = CELL;
-      drawPixelBlock(x+1, y+1, w-2, h-2);
-      ctx.fillStyle = C_LCD_BG;
-      ctx.font = '12px "Press Start 2P", monospace';
-      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(f.word || '?', x + w/2, y + h/2 + 1);
-    }
-  },
-  drawSnake() {
-    for (let i = 0; i < S.snake.length; i++) {
-      const seg = S.snake[i];
-      const x = GRID_X + seg.x*CELL, y = GRID_Y + seg.y*CELL;
-      if (i === 0) {
-        ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x+1,y+1,CELL-2,CELL-2);
-        ctx.fillStyle = C_LCD_BG;
-        const dx = S.dir.x, dy = S.dir.y;
-        if (dx !== 0) {
-          ctx.fillRect(x+(dx>0?15:4), y+5, 4, 4);
-          ctx.fillRect(x+(dx>0?15:4), y+12, 4, 4);
-        } else {
-          ctx.fillRect(x+5, y+(dy>0?15:4), 4, 4);
-          ctx.fillRect(x+12, y+(dy>0?15:4), 4, 4);
-        }
-      } else {
-        ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x+2,y+2,CELL-4,CELL-4);
-        ctx.fillStyle = C_LCD_BG; ctx.fillRect(x+4,y+4,CELL-8,CELL-8);
-      }
-    }
-  },
-  drawTimer() {
-    const pct = Math.max(0, S.timer / S.maxTimer);
-    const bw = W-44, bh = 5, bx = 22, by = 315;
-    ctx.fillStyle = C_LCD_DARK; ctx.fillRect(bx-1,by-1,bw+2,bh+2);
-    ctx.fillStyle = C_LCD_BG; ctx.fillRect(bx,by,bw,bh);
-    ctx.fillStyle = C_LCD_DARK; ctx.fillRect(bx,by,bw*pct,bh);
-  },
-  draw() {
-    clearScreen();
-    this.drawHUD();
-    this.drawSentence();
-    this.drawGrid();
-    this.drawFood();
-    this.drawSnake();
-    this.drawTimer();
-  },
-  drawCorrect() {
-    clearScreen(); this.drawHUD(); this.drawTimer();
-    const q = S.currentQuestion;
-    drawDynamicText(q.text, 80, C_LCD_DARK, 14);
-    ptxtC('CORRECT!', 120, C_LCD_DARK, 20);
-    ptxtC('+100', 170, C_LCD_DARK, 16);
-    drawDynamicText(q.full, 210, C_LCD_DARK, 12);
-    if (S.fbTime > 500 && Math.floor(S.fbTime/400) % 2 === 0) ptxtC('PRESS A', 250, C_LCD_DARK, 10);
-  },
-  drawWrong() {
-    clearScreen(); this.drawHUD(); this.drawTimer();
-    const t = S.fbTime, fd = S.fbData, q = S.currentQuestion;
-    drawDynamicText(q.text, 80, C_LCD_DARK, 14);
-    ptxtC(fd.timeout ? 'TIME UP!' : 'WRONG!', 120, C_LCD_DARK, 20);
-    ptxtC(fd.pronoun + ' -> ' + fd.correct, 170, C_LCD_DARK, 14);
-    drawDynamicText(fd.full, 210, C_LCD_DARK, 12);
-    if (t > 1600) {
-      if (S.lives > 0) {
-        if (Math.floor(t/400) % 2 === 0) ptxtC('PRESS A', 250, C_LCD_DARK, 10);
-      } else {
-        if (Math.floor(t/400) % 2 === 0) ptxtC('NO LIVES LEFT', 250, C_LCD_DARK, 10);
-      }
-    }
-  },
-  drawLevelIntro() {
-    clearScreen();
-    const t = S.fbTime;
-    ptxtC('LEVEL ' + S.level, H/2-20, C_LCD_DARK, 20);
-    if (t > 1400) ptxtC(['','EASY','NORMAL','HARD'][S.level], H/2+15, C_LCD_DARK, 14);
-    if (t > 2200) { S.screen = 'QUESTION_INTRO'; S.fbTime = 0; }
-  },
-  drawQuestionIntro() {
-    this.draw();
-    const t = S.fbTime;
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.fillRect(GRID_X, GRID_Y, GRID_COLS*CELL, GRID_ROWS*CELL);
-    if (t < 1000) ptxtC('GET READY!', H/2-10, C_LCD_BG, 14);
-    else if (t < 1400) ptxtC('GO!', H/2-15, C_LCD_BG, 24);
-    else {
-      S.screen = 'PLAYING';
-      S.lastMove = performance.now();
-      S.timer = S.maxTimer;
-    }
-  }
+  drawHUD() { ptxt('SCORE:' + String(S.score).padStart(4,'0'), 18, 12, C_LCD_DARK, 11); let lv = ''; for (let i = 0; i < 3; i++) lv += i < S.lives ? '♥ ' : '♡ '; ptxt(lv, 180, 12, C_LCD_DARK, 11); ptxt('Q:' + S.caseNum + '/' + S.questions.length, W-90, 12, C_LCD_DARK, 10); },
+  drawSentence() { if (!S.currentQuestion) return; drawDynamicText(S.currentQuestion.text, 30, C_LCD_DARK, 13); },
+  drawGrid() { ctx.strokeStyle = C_LCD_DARK; ctx.lineWidth = 2; ctx.strokeRect(GRID_X-2, GRID_Y-2, GRID_COLS*CELL+4, GRID_ROWS*CELL+4); },
+  drawFood() { for (const f of S.food) { const x = GRID_X + f.x*CELL, y = GRID_Y + f.y*CELL, w = CELL*2, h = CELL; drawPixelBlock(x+1, y+1, w-2, h-2); ctx.fillStyle = C_LCD_BG; ctx.font = '11px "Press Start 2P", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(f.word || '?', x + w/2, y + h/2 + 1); } },
+  drawSnake() { for (let i = 0; i < S.snake.length; i++) { const seg = S.snake[i]; const x = GRID_X + seg.x*CELL, y = GRID_Y + seg.y*CELL; if (i === 0) { ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x+1,y+1,CELL-2,CELL-2); ctx.fillStyle = C_LCD_BG; const dx = S.dir.x, dy = S.dir.y; if (dx !== 0) { ctx.fillRect(x+(dx>0?14:3), y+4, 4, 4); ctx.fillRect(x+(dx>0?14:3), y+13, 4, 4); } else { ctx.fillRect(x+4, y+(dy>0?14:3), 4, 4); ctx.fillRect(x+13, y+(dy>0?14:3), 4, 4); } } else { ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x+2,y+2,CELL-4,CELL-4); ctx.fillStyle = C_LCD_BG; ctx.fillRect(x+4,y+4,CELL-8,CELL-8); } } },
+  drawTimer() { const pct = Math.max(0, S.timer / S.maxTimer); const bw = W-36, bh = 5, bx = 18, by = 285; ctx.fillStyle = C_LCD_DARK; ctx.fillRect(bx-1,by-1,bw+2,bh+2); ctx.fillStyle = C_LCD_BG; ctx.fillRect(bx,by,bw,bh); ctx.fillStyle = C_LCD_DARK; ctx.fillRect(bx,by,bw*pct,bh); },
+  draw() { clearScreen(); this.drawHUD(); this.drawSentence(); this.drawGrid(); this.drawFood(); this.drawSnake(); this.drawTimer(); },
+  drawCorrect() { clearScreen(); this.drawHUD(); this.drawTimer(); const q = S.currentQuestion; drawDynamicText(q.text, 70, C_LCD_DARK, 13); ptxtC('CORRECT!', 110, C_LCD_DARK, 16); ptxtC('+100', 150, C_LCD_DARK, 12); drawDynamicText(q.full, 190, C_LCD_DARK, 11); if (S.fbTime > 500 && Math.floor(S.fbTime/400) % 2 === 0) ptxtC('PRESS A', 240, C_LCD_DARK, 10); },
+  drawWrong() { clearScreen(); this.drawHUD(); this.drawTimer(); const t = S.fbTime, fd = S.fbData, q = S.currentQuestion; drawDynamicText(q.text, 70, C_LCD_DARK, 13); ptxtC(fd.timeout ? 'TIME UP!' : 'WRONG!', 110, C_LCD_DARK, 16); ptxtC(fd.pronoun + ' -> ' + fd.correct, 150, C_LCD_DARK, 11); drawDynamicText(fd.full, 190, C_LCD_DARK, 11); if (t > 1600) { if (S.lives > 0) { if (Math.floor(t/400) % 2 === 0) ptxtC('PRESS A', 240, C_LCD_DARK, 10); } else { if (Math.floor(t/400) % 2 === 0) ptxtC('NO LIVES LEFT', 240, C_LCD_DARK, 10); } } },
+  drawLevelIntro() { clearScreen(); const t = S.fbTime; if (S.isCustomMode) { ptxtC('CUSTOM SET', H/2-15, C_LCD_DARK, 16); if (t > 1400) ptxtC(S.customSentences.length + ' QUESTIONS', H/2+15, C_LCD_DARK, 11); } else { ptxtC('LEVEL ' + S.level, H/2-15, C_LCD_DARK, 16); if (t > 1400) ptxtC(['','EASY','NORMAL','HARD'][S.level], H/2+15, C_LCD_DARK, 11); } if (t > 2200) { S.screen = 'QUESTION_INTRO'; S.fbTime = 0; } },
+  drawQuestionIntro() { this.draw(); const t = S.fbTime; ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(GRID_X, GRID_Y, GRID_COLS*CELL, GRID_ROWS*CELL); if (t < 1000) ptxtC('GET READY!', H/2-8, C_LCD_BG, 12); else if (t < 1400) ptxtC('GO!', H/2-12, C_LCD_BG, 20); else { S.screen = 'PLAYING'; S.lastMove = performance.now(); S.timer = S.maxTimer; } }
 };
 
 const Menu = {
-  items: ['START GAME', 'MINI GAMES', 'HOW TO PLAY'],
-  games: [
-    {name:'AM/IS/ARE SNAKE', locked:false, id:'snake'},
-    {name:'WORD RUSH', locked:true},
-    {name:'GLITCH FIX', locked:true},
-  ],
-  levels: [
-    {name:'LEVEL 1', sub:'EASY', level:1},
-    {name:'LEVEL 2', sub:'NORMAL', level:2},
-    {name:'LEVEL 3', sub:'HARD', level:3},
-  ],
+  items: IS_FULL_VERSION ? ['START GAME', 'HOW TO PLAY', 'TEACHER\'S MODE'] : ['START GAME', 'HOW TO PLAY'],
+  levels: [ {name:'LEVEL 1', sub:'EASY', level:1}, {name:'LEVEL 2', sub:'NORMAL', level:2}, {name:'LEVEL 3', sub:'HARD', level:3} ],
   draw() {
     clearScreen();
-    ptxtC('KOD_LINGVOKVESTA', 55, C_LCD_DARK, 16);
-    ptxtC('AM / IS / ARE', 90, C_LCD_DARK, 10);
-    const sy = 140, sp = 40;
+    ptxtC('KOD_LINGVOKVESTA', 40, C_LCD_DARK, 14);
+    ptxtC('AM / IS / ARE', 65, C_LCD_DARK, 10);
+    const sy = 110, sp = 36;
     for (let i = 0; i < this.items.length; i++) {
       const y = sy + i*sp, sel = i === S.menuIndex;
-      if (sel) {
-        ctx.fillStyle = 'rgba(0,0,0,0.15)';
-        roundRect(40, y-5, W-80, 32, 4); ctx.fill();
-      }
-      ptxt(this.items[i], 55, y, sel ? C_LCD_DARK : 'rgba(15,56,15,0.5)', 14);
-      if (sel) ptxt('>', W-55, y, C_LCD_DARK, 14);
+      if (sel) { ctx.fillStyle = 'rgba(0,0,0,0.15)'; roundRect(40, y-6, W-80, 28, 4); ctx.fill(); }
+      ptxt(this.items[i], 55, y, sel ? C_LCD_DARK : 'rgba(15,56,15,0.5)', 12);
+      if (sel) ptxt('>', W-60, y, C_LCD_DARK, 12);
     }
-    txt('SOUND: ' + (Sound.enabled ? 'ON' : 'OFF'), 12, H-20, 'rgba(15,56,15,0.6)', 10);
-    if (S.highScore > 0) txt('HI: ' + S.highScore, W-110, H-20, C_LCD_DARK, 10);
-  },
-  drawMiniGames() {
-    clearScreen();
-    ptxtC('MINI GAMES', 55, C_LCD_DARK, 16);
-    const sy = 110, sp = 40;
-    for (let i = 0; i < this.games.length; i++) {
-      const y = sy + i*sp, sel = i === S.gameIndex, g = this.games[i];
-      if (sel) {
-        ctx.fillStyle = 'rgba(0,0,0,0.15)';
-        roundRect(40, y-5, W-80, 32, 4); ctx.fill();
-      }
-      ptxt(g.name, 55, y, g.locked ? 'rgba(15,56,15,0.3)' : (sel ? C_LCD_DARK : 'rgba(15,56,15,0.7)'), 12);
-      if (g.locked) ptxt('LCK', W-55, y, 'rgba(15,56,15,0.5)', 12);
-      else if (sel) ptxt('>', W-55, y, C_LCD_DARK, 12);
-    }
-    txt('A: SELECT  B: BACK', 12, H-20, 'rgba(15,56,15,0.6)', 10);
+    txt('SOUND: ' + (Sound.enabled ? 'ON' : 'OFF'), 15, H-16, 'rgba(15,56,15,0.6)', 9);
+    if (S.highScore > 0) txt('HI: ' + S.highScore, W-80, H-16, C_LCD_DARK, 9);
   },
   drawHowTo() {
     clearScreen();
-    ptxtC('HOW TO PLAY', 45, C_LCD_DARK, 14);
-    const lines = [
-      'EAT THE CORRECT WORD',
-      'TO FILL THE BLANK.',
-      '',
-      'SHE ___ A STUDENT.',
-      'ANSWER: IS',
-      '',
-      'AM -> I',
-      'IS -> HE/SHE/IT',
-      'ARE -> YOU/WE/THEY',
-      '',
-      'WRONG = -1 LIFE',
-      '3 LIVES TOTAL',
-      '',
-      'B: BACK'
-    ];
-    for (let i = 0; i < lines.length; i++) {
-      const y = 85 + i*16;
-      if (y < H-10) txt(lines[i], W/2, y, C_LCD_DARK, 10, 'center');
-    }
+    ptxtC('HOW TO PLAY', 30, C_LCD_DARK, 12);
+    const lines = ['EAT THE CORRECT WORD','TO FILL THE BLANK.','','SHE ___ A STUDENT.','ANSWER: IS','','AM -> I','IS -> HE/SHE/IT','ARE -> YOU/WE/THEY','','WRONG = -1 LIFE','3 LIVES TOTAL','','B: BACK'];
+    for (let i = 0; i < lines.length; i++) { const y = 65 + i*15; if (y < H-10) txt(lines[i], W/2, y, C_LCD_DARK, 9, 'center'); }
   },
   drawLevelSelect() {
     clearScreen();
-    ptxtC('SELECT LEVEL', 55, C_LCD_DARK, 14);
-    const sy = 110, sp = 45;
+    ptxtC('SELECT LEVEL', 40, C_LCD_DARK, 12);
+    const sy = 90, sp = 42;
     for (let i = 0; i < this.levels.length; i++) {
       const y = sy + i*sp, sel = i === S.levelIndex, lv = this.levels[i];
       const locked = (i+1) > S.unlockedLevels;
-      if (sel && !locked) {
-        ctx.fillStyle = 'rgba(0,0,0,0.15)';
-        roundRect(40, y-5, W-80, 32, 4); ctx.fill();
-      }
-      ptxt(lv.name + ' - ' + lv.sub, 55, y, locked ? 'rgba(15,56,15,0.3)' : (sel ? C_LCD_DARK : 'rgba(15,56,15,0.7)'), 14);
-      if (locked) ptxt('LCK', W-55, y, 'rgba(15,56,15,0.5)', 12);
-      else if (sel) ptxt('>', W-55, y, C_LCD_DARK, 14);
+      if (sel && !locked) { ctx.fillStyle = 'rgba(0,0,0,0.15)'; roundRect(40, y-6, W-80, 28, 4); ctx.fill(); }
+      ptxt(lv.name + ' - ' + lv.sub, 55, y, locked ? 'rgba(15,56,15,0.3)' : (sel ? C_LCD_DARK : 'rgba(15,56,15,0.7)'), 12);
+      if (locked) ptxt('LCK', W-60, y, 'rgba(15,56,15,0.5)', 10);
+      else if (sel) ptxt('>', W-60, y, C_LCD_DARK, 12);
     }
-    txt('A: START  B: BACK', 12, H-20, 'rgba(15,56,15,0.6)', 10);
+    txt('A: START  B: BACK', 15, H-16, 'rgba(15,56,15,0.6)', 9);
   }
 };
 
-function drawBoot() {
-  clearScreen();
-  const t = S.bootTime;
-  if (t < 2000) {
-    ptxtC('KOD_LINGVOKVESTA', 110, C_LCD_DARK, 12);
-    const d = Math.floor(t/400) % 4;
-    txt('LOADING' + '.'.repeat(d), W/2, 145, 'rgba(15,56,15,0.5)', 10, 'center');
-  } else {
-    ptxtC('KOD_LINGVOKVESTA', 100, C_LCD_DARK, 14);
-    ptxtC('AM / IS / ARE', 140, C_LCD_DARK, 10);
-    if (Math.floor(t/500) % 2 === 0) ptxtC('PRESS START', 180, C_LCD_DARK, 10);
-  }
-}
+function drawBoot() { clearScreen(); const t = S.bootTime; if (t < 2000) { ptxtC('KOD_LINGVOKVESTA', 90, C_LCD_DARK, 11); const d = Math.floor(t/400) % 4; txt('LOADING' + '.'.repeat(d), W/2, 125, 'rgba(15,56,15,0.5)', 10, 'center'); } else { ptxtC('KOD_LINGVOKVESTA', 80, C_LCD_DARK, 12); ptxtC('AM / IS / ARE', 115, C_LCD_DARK, 10); if (Math.floor(t/500) % 2 === 0) ptxtC('PRESS START', 160, C_LCD_DARK, 10); } }
+function drawPaused() { Snake.draw(); ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0,0,W,H); ptxtC('PAUSED', 100, C_LCD_BG, 14); if (Math.floor(performance.now()/500) % 2 === 0) ptxtC('PRESS START', 135, C_LCD_BG, 10); }
+function drawGameOver() { clearScreen(); ptxtC('GAME OVER', 50, C_LCD_DARK, 16); const t = S.fbTime; if (t > 300) ptxtC('SCORE: ' + S.score, 100, C_LCD_DARK, 11); if (t > 600) ptxtC('CORRECT: ' + S.correctCount, 135, C_LCD_DARK, 10); if (t > 900) { if (S.score >= S.highScore && S.score > 0) ptxtC('NEW HIGH SCORE!', 170, C_LCD_DARK, 10); else txt('HIGH: ' + S.highScore, W/2, 170, 'rgba(15,56,15,0.5)', 9, 'center'); } if (t > 1600 && Math.floor(t/500) % 2 === 0) ptxtC('PRESS START', H-25, C_LCD_DARK, 10); }
+function drawCaseComplete() { clearScreen(); const t = S.fbTime; ctx.strokeStyle = C_LCD_DARK; ctx.lineWidth = 2; roundRect(40, 50, W-80, 180, 6); ctx.stroke(); if (t > 200) ptxtC(S.isCustomMode ? 'CUSTOM SET DONE!' : 'CASE SOLVED', 80, C_LCD_DARK, 11); if (t > 500) ptxtC('PERFECT!', 115, C_LCD_DARK, 10); if (t > 800) ptxtC('SCORE: ' + S.score, 150, C_LCD_DARK, 12); if (t > 1200) ptxtC('CORRECT: ' + S.correctCount + '/' + S.questions.length, 185, C_LCD_DARK, 10); if (t > 2000 && Math.floor(t/500) % 2 === 0) ptxtC('PRESS START', H-25, C_LCD_DARK, 10); }
 
-function drawPaused() {
-  Snake.draw();
-  ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(0,0,W,H);
-  ptxtC('PAUSED', 120, C_LCD_BG, 16);
-  if (Math.floor(performance.now()/500) % 2 === 0) ptxtC('PRESS START', 150, C_LCD_BG, 10);
-}
-
-function drawGameOver() {
-  clearScreen();
-  ptxtC('GAME OVER', 80, C_LCD_DARK, 18);
-  const t = S.fbTime;
-  if (t > 300) ptxtC('SCORE: ' + S.score, 130, C_LCD_DARK, 12);
-  if (t > 600) ptxtC('CORRECT: ' + S.correctCount, 160, C_LCD_DARK, 10);
-  if (t > 900) {
-    if (S.score >= S.highScore && S.score > 0) ptxtC('NEW HIGH SCORE!', 190, C_LCD_DARK, 10);
-    else txt('HIGH: ' + S.highScore, W/2, 190, 'rgba(15,56,15,0.5)', 9, 'center');
-  }
-  if (t > 1600 && Math.floor(t/500) % 2 === 0) ptxtC('PRESS START', H-30, C_LCD_DARK, 10);
-}
-
-function drawCaseComplete() {
-  clearScreen();
-  const t = S.fbTime;
-  ctx.strokeStyle = C_LCD_DARK; ctx.lineWidth = 2;
-  roundRect(50, 70, W-100, 180, 6); ctx.stroke();
-  if (t > 200) ptxtC('CASE SOLVED', 100, C_LCD_DARK, 14);
-  if (t > 500) ptxtC('PERFECT!', 135, C_LCD_DARK, 12);
-  if (t > 800) ptxtC('SCORE: ' + S.score, 165, C_LCD_DARK, 14);
-  if (t > 1200) ptxtC('CORRECT: ' + S.correctCount + '/24', 195, C_LCD_DARK, 10);
-  if (t > 2000 && Math.floor(t/500) % 2 === 0) ptxtC('PRESS START', H-30, C_LCD_DARK, 10);
-}
-
-function draw() {
-  switch (S.screen) {
-    case 'BOOT': drawBoot(); break;
-    case 'MENU': Menu.draw(); break;
-    case 'MINI_GAMES': Menu.drawMiniGames(); break;
-    case 'HOW_TO': Menu.drawHowTo(); break;
-    case 'LEVEL_SELECT': Menu.drawLevelSelect(); break;
-    case 'LEVEL_INTRO': Snake.drawLevelIntro(); break;
-    case 'QUESTION_INTRO': Snake.drawQuestionIntro(); break;
-    case 'PLAYING': Snake.draw(); break;
-    case 'PAUSED': drawPaused(); break;
-    case 'CORRECT': Snake.drawCorrect(); break;
-    case 'WRONG': Snake.drawWrong(); break;
-    case 'GAME_OVER': drawGameOver(); break;
-    case 'CASE_COMPLETE': drawCaseComplete(); break;
-  }
-}
+function draw() { switch (S.screen) { case 'BOOT': drawBoot(); break; case 'MENU': Menu.draw(); break; case 'HOW_TO': Menu.drawHowTo(); break; case 'LEVEL_SELECT': Menu.drawLevelSelect(); break; case 'LEVEL_INTRO': Snake.drawLevelIntro(); break; case 'QUESTION_INTRO': Snake.drawQuestionIntro(); break; case 'PLAYING': Snake.draw(); break; case 'PAUSED': drawPaused(); break; case 'CORRECT': Snake.drawCorrect(); break; case 'WRONG': Snake.drawWrong(); break; case 'GAME_OVER': drawGameOver(); break; case 'CASE_COMPLETE': drawCaseComplete(); break; } }
 
 function update(ts) {
   if (S.screen === 'BOOT') S.bootTime += 16;
   if (S.screen === 'PLAYING') Snake.update(ts);
   const fbScreens = ['CORRECT','WRONG','LEVEL_INTRO','QUESTION_INTRO','GAME_OVER','CASE_COMPLETE'];
   if (fbScreens.includes(S.screen)) S.fbTime += 16;
-
   if (S.screen === 'CORRECT' && S.fbTime > 1800) Snake.nextQ();
-  if (S.screen === 'WRONG') {
-    if (S.lives <= 0 && S.fbTime > 2800) {
-      Sound.play('gameOver');
-      S.screen = 'GAME_OVER'; S.fbTime = 0;
-    } else if (S.lives > 0 && S.fbTime > 3200) {
-      Snake.nextQ();
-    }
-  }
+  if (S.screen === 'WRONG') { if (S.lives <= 0 && S.fbTime > 2800) { Sound.play('gameOver'); S.screen = 'GAME_OVER'; S.fbTime = 0; } else if (S.lives > 0 && S.fbTime > 3200) { Snake.nextQ(); } }
 }
 
 function setupInput() {
-  Input.on('up', () => {
-    if (S.screen === 'MENU') S.menuIndex = (S.menuIndex - 1 + Menu.items.length) % Menu.items.length;
-    else if (S.screen === 'MINI_GAMES') S.gameIndex = (S.gameIndex - 1 + Menu.games.length) % Menu.games.length;
-    else if (S.screen === 'LEVEL_SELECT') { if (S.levelIndex > 0) S.levelIndex--; }
-    else if (S.screen === 'PLAYING') Snake.setDir(0, -1);
-  });
-  Input.on('down', () => {
-    if (S.screen === 'MENU') S.menuIndex = (S.menuIndex + 1) % Menu.items.length;
-    else if (S.screen === 'MINI_GAMES') S.gameIndex = (S.gameIndex + 1) % Menu.games.length;
-    else if (S.screen === 'LEVEL_SELECT') {
-      const n = S.levelIndex + 1;
-      if (n < Menu.levels.length && (n+1) <= S.unlockedLevels) S.levelIndex = n;
-    }
-    else if (S.screen === 'PLAYING') Snake.setDir(0, 1);
-  });
-  Input.on('left', () => {
-    if (S.screen === 'PLAYING') Snake.setDir(-1, 0);
-  });
-  Input.on('right', () => {
-    if (S.screen === 'PLAYING') Snake.setDir(1, 0);
-  });
+  Input.on('up', () => { if (S.screen === 'MENU') S.menuIndex = (S.menuIndex - 1 + Menu.items.length) % Menu.items.length; else if (S.screen === 'LEVEL_SELECT') { if (S.levelIndex > 0) S.levelIndex--; } else if (S.screen === 'PLAYING') Snake.setDir(0, -1); });
+  Input.on('down', () => { if (S.screen === 'MENU') S.menuIndex = (S.menuIndex + 1) % Menu.items.length; else if (S.screen === 'LEVEL_SELECT') { const n = S.levelIndex + 1; if (n < Menu.levels.length && (n+1) <= S.unlockedLevels) S.levelIndex = n; } else if (S.screen === 'PLAYING') Snake.setDir(0, 1); });
+  Input.on('left', () => { if (S.screen === 'PLAYING') Snake.setDir(-1, 0); });
+  Input.on('right', () => { if (S.screen === 'PLAYING') Snake.setDir(1, 0); });
   Input.on('a', () => {
     if (S.screen === 'BOOT' && S.bootTime > 2000) { S.screen = 'MENU'; return; }
     if (S.screen === 'MENU') {
-      if (S.menuIndex === 0) { S.screen = 'LEVEL_SELECT'; S.levelIndex = 0; }
-      else if (S.menuIndex === 1) { S.screen = 'MINI_GAMES'; S.gameIndex = 0; }
-      else if (S.menuIndex === 2) S.screen = 'HOW_TO';
-    } else if (S.screen === 'MINI_GAMES') {
-      const g = Menu.games[S.gameIndex];
-      if (!g.locked && g.id === 'snake') { S.screen = 'LEVEL_SELECT'; S.levelIndex = 0; }
+      if (S.menuIndex === 0) { S.screen = 'LEVEL_SELECT'; S.levelIndex = 0; S.isCustomMode = false; }
+      else if (S.menuIndex === 1) S.screen = 'HOW_TO';
+      else if (S.menuIndex === 2 && IS_FULL_VERSION) { openTeacherModal(); }
     } else if (S.screen === 'LEVEL_SELECT') {
-      if ((S.levelIndex + 1) <= S.unlockedLevels) {
-        Snake.init(Menu.levels[S.levelIndex].level);
-        S.screen = 'LEVEL_INTRO'; S.fbTime = 0;
-      }
-    } else if (S.screen === 'CORRECT' && S.fbTime > 500) {
-      Snake.nextQ(); // Пропуск экрана "Правильно"
-    } else if (S.screen === 'WRONG' && S.fbTime > 500 && S.lives > 0) {
-      Snake.nextQ(); // Пропуск экрана "Неправильно"
-    }
+      if ((S.levelIndex + 1) <= S.unlockedLevels) { S.isCustomMode = false; Snake.init(Menu.levels[S.levelIndex].level); S.screen = 'LEVEL_INTRO'; S.fbTime = 0; }
+    } else if (S.screen === 'CORRECT' && S.fbTime > 500) { Snake.nextQ(); } 
+    else if (S.screen === 'WRONG' && S.fbTime > 500 && S.lives > 0) { Snake.nextQ(); }
   });
-  Input.on('b', () => {
-    if (['MINI_GAMES','HOW_TO','LEVEL_SELECT'].includes(S.screen)) S.screen = 'MENU';
-  });
+  Input.on('b', () => { if (['HOW_TO','LEVEL_SELECT'].includes(S.screen)) S.screen = 'MENU'; });
   Input.on('start', () => {
     if (S.screen === 'BOOT' && S.bootTime > 2000) { S.screen = 'MENU'; return; }
-    if (S.screen === 'MENU') { S.screen = 'LEVEL_SELECT'; S.levelIndex = 0; return; }
-    if (S.screen === 'LEVEL_SELECT') {
-      if ((S.levelIndex + 1) <= S.unlockedLevels) {
-        Snake.init(Menu.levels[S.levelIndex].level);
-        S.screen = 'LEVEL_INTRO'; S.fbTime = 0;
-      }
-      return;
-    }
+    if (S.screen === 'MENU') { S.screen = 'LEVEL_SELECT'; S.levelIndex = 0; S.isCustomMode = false; return; }
+    if (S.screen === 'LEVEL_SELECT') { if ((S.levelIndex + 1) <= S.unlockedLevels) { S.isCustomMode = false; Snake.init(Menu.levels[S.levelIndex].level); S.screen = 'LEVEL_INTRO'; S.fbTime = 0; } return; }
     if (S.screen === 'PLAYING') { S.screen = 'PAUSED'; return; }
     if (S.screen === 'PAUSED') { S.screen = 'PLAYING'; S.lastMove = performance.now(); return; }
     if (S.screen === 'GAME_OVER' && S.fbTime > 1600) { S.screen = 'MENU'; return; }
@@ -1177,37 +531,77 @@ function setupInput() {
   Input.on('select', () => Sound.toggle());
 }
 
+// Логика Teacher's Mode
+function openTeacherModal() {
+  const modal = document.getElementById('teacherModal');
+  const textarea = document.getElementById('customSentencesInput');
+  textarea.value = S.customSentences.map(q => `${q.text} | ${q.answer} | ${q.full} | ${q.pronoun}`).join('\n');
+  modal.classList.add('active');
+  if (S.screen === 'PLAYING') S.screen = 'PAUSED';
+}
+
+function closeTeacherModal() { document.getElementById('teacherModal').classList.remove('active'); }
+
+function parseCustomSentences(text) {
+  const lines = text.trim().split('\n');
+  const parsed = [];
+  for (let line of lines) {
+    if (!line.trim()) continue;
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length >= 2) {
+      const text = parts[0];
+      const answer = parts[1].toUpperCase();
+      const full = parts[2] || text.replace('___', answer);
+      const pronoun = (parts[3] || 'CUSTOM').toUpperCase();
+      if (['AM', 'IS', 'ARE'].includes(answer)) {
+        parsed.push({ text, answer, full, pronoun });
+      }
+    }
+  }
+  return parsed;
+}
+
+function setupTeacherModal() {
+  document.getElementById('saveCustomBtn').addEventListener('click', () => {
+    const text = document.getElementById('customSentencesInput').value;
+    const parsed = parseCustomSentences(text);
+    if (parsed.length > 0) {
+      Storage.set('customSentences', parsed);
+      S.customSentences = parsed;
+      S.isCustomMode = true;
+      closeTeacherModal();
+      Snake.init(1); 
+      S.screen = 'LEVEL_INTRO'; S.fbTime = 0;
+    } else {
+      alert("Ошибка! Проверьте формат ввода.\nНужно: Текст ___ | Ответ | Полное предложение | Местоимение");
+    }
+  });
+
+  document.getElementById('clearCustomBtn').addEventListener('click', () => {
+    document.getElementById('customSentencesInput').value = '';
+    Storage.set('customSentences', []);
+    S.customSentences = [];
+  });
+
+  document.getElementById('cancelCustomBtn').addEventListener('click', closeTeacherModal);
+}
+
 function init() {
   S.unlockedLevels = Storage.get('unlockedLevels', 1);
   S.highScore = Storage.get('highScore', 0);
+  S.customSentences = Storage.get('customSentences', []);
   Sound.init();
   Input.init();
   setupInput();
+  setupTeacherModal();
   requestAnimationFrame(loop);
 }
 
-function loop(ts) {
-  update(ts);
-  draw();
-  requestAnimationFrame(loop);
-}
+function loop(ts) { update(ts); draw(); requestAnimationFrame(loop); }
 
-// Ждем загрузки шрифта перед стартом, чтобы интерфейс не прыгал
 if (document.fonts && document.fonts.ready) {
-  document.fonts.ready.then(() => {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', init);
-    } else {
-      init();
-    }
-  });
-} else {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-}
+  document.fonts.ready.then(() => { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init(); });
+} else { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init(); }
 </script>
 </body>
 </html>
