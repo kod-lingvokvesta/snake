@@ -20,7 +20,6 @@
     --shadow-deep: rgba(40, 50, 35, 0.55);
     --base-w: 680px;
     --base-h: 780px;
-    /* Убираем жесткое ограничение в 1.0 для десктопа, чтобы она была крупнее */
     --console-scale: min(calc(96vw / var(--base-w)), calc(92svh / var(--base-h)), 1.4);
   }
 
@@ -51,16 +50,7 @@
 
   .vignette { position: fixed; inset: 0; background: radial-gradient(ellipse at center, transparent 45%, rgba(8, 10, 7, 0.55) 100%); pointer-events: none; z-index: 2; }
 
-  /* Новая обертка для идеального выравнивания */
-  .scene {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    perspective: 1400px;
-    z-index: 1;
-  }
+  .scene { position: fixed; inset: 0; display: flex; justify-content: center; align-items: center; perspective: 1400px; z-index: 1; }
 
   .console-wrapper {
     width: calc(var(--base-w) * var(--console-scale));
@@ -121,7 +111,6 @@
   .bottom-section { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
   .controls-wrapper { display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-top: 20px; }
 
-  /* D-PAD */
   .dpad { position: relative; width: 160px; height: 160px; }
   .d-btn { position: absolute; width: 52px; height: 52px; border: none; border-radius: 12px; cursor: pointer; background: linear-gradient(160deg, #3a4636 0%, #2a3228 100%); box-shadow: 0 4px 0 #1a2118, 0 6px 12px rgba(0,0,0,0.35), inset 0 1px 1px rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
   .d-btn::after { content: ''; width: 0; height: 0; border-style: solid; opacity: 0.75; }
@@ -131,14 +120,12 @@
   .d-down { top: 108px; left: 54px; } .d-down::after { border-width: 11px 8px 0 8px; border-color: #c8d4b8 transparent transparent transparent; }
   .d-btn.pressed { transform: translateY(3px); box-shadow: 0 1px 0 #1a2118, inset 0 2px 4px rgba(0,0,0,0.4); filter: brightness(0.85); }
 
-  /* A / B */
   .ab-group { display: flex; gap: 28px; align-items: center; transform: rotate(-14deg); }
   .ab-btn { width: 72px; height: 72px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: 'Press Start 2P', monospace; font-size: 16px; color: rgba(255, 245, 230, 0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.4); touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
   .btn-a { background: linear-gradient(150deg, #d48a6a 0%, #b86a4a 100%); box-shadow: 0 5px 0 #7a3e2a, 0 8px 16px rgba(120, 50, 30, 0.35), inset 0 2px 3px rgba(255,220,190,0.35); }
   .btn-b { background: linear-gradient(150deg, #c48a8a 0%, #a86868 100%); box-shadow: 0 5px 0 #6e3a3a, 0 8px 16px rgba(100, 40, 40, 0.3), inset 0 2px 3px rgba(255,210,210,0.3); }
   .ab-btn.pressed { transform: translateY(4px); filter: brightness(0.9); }
 
-  /* SELECT / START */
   .ss-group { display: flex; gap: 28px; justify-content: center; margin-top: 18px; }
   .ss-btn { width: 108px; height: 38px; border: none; border-radius: 19px; cursor: pointer; background: linear-gradient(180deg, #e8dfd0 0%, #d4c8b4 100%); box-shadow: 0 4px 0 #b8a890, inset 0 1px 2px rgba(255,255,255,0.6); font-family: 'Press Start 2P', monospace; font-size: 8px; color: #5a5040; letter-spacing: 1px; text-transform: uppercase; touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
   .ss-btn.pressed { transform: translateY(3px); box-shadow: 0 1px 0 #b8a890, inset 0 2px 4px rgba(0,0,0,0.15); }
@@ -149,7 +136,6 @@
   .battery-icon::after { content: ''; position: absolute; right: -4px; top: 3px; width: 3px; height: 6px; background: rgba(245, 240, 230, 0.5); border-radius: 0 1px 1px 0; }
   .battery-fill { width: 72%; height: 100%; background: linear-gradient(90deg, #98b78c, #b8d4a8); border-radius: 1px; }
 
-  /* Увеличенное модальное окно Teacher's Mode */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 100; justify-content: center; align-items: center; padding: 20px; }
   .modal-overlay.active { display: flex; }
   
@@ -209,7 +195,7 @@
         </div>
 
         <div class="footer">
-          <span class="footer-text">KOD_LINGVOKVESTA OS 1.6</span>
+          <span class="footer-text">KOD_LINGVOKVESTA OS 1.7</span>
           <div class="battery">
             <div class="battery-icon"><div class="battery-fill"></div></div>
           </div>
@@ -220,14 +206,13 @@
   </div>
 </div>
 
-<!-- Модальное окно для Teacher's Mode -->
 <div id="teacherModal" class="modal-overlay">
   <div class="modal-content">
     <h2>TEACHER'S MODE</h2>
     <p>Enter your sentences. Use the format:</p>
     <p style="text-align: center;"><code>Text ___ | Answer | Full | Pronoun</code></p>
     <p style="font-size: 16px; color: #7a6a5a;">Example: <code>She ___ a doctor. | IS | She is a doctor. | SHE</code></p>
-    <textarea id="customSentencesInput" placeholder="I ___ a cat. | AM | I am a cat. | I&#10;He ___ a dog. | IS | He is a dog. | HE"></textarea>
+    <textarea id="customSentencesInput"></textarea>
     <div class="modal-buttons">
       <button class="modal-btn btn-clear" id="clearCustomBtn">Clear</button>
       <button class="modal-btn btn-cancel" id="cancelCustomBtn">Cancel</button>
@@ -554,7 +539,13 @@ function setupInput() {
 function openTeacherModal() {
   const modal = document.getElementById('teacherModal');
   const textarea = document.getElementById('customSentencesInput');
-  textarea.value = S.customSentences.map(q => `${q.text} | ${q.answer} | ${q.full} | ${q.pronoun}`).join('\n');
+  
+  if (S.customSentences.length > 0) {
+    textarea.value = S.customSentences.map(q => `${q.text} | ${q.answer} | ${q.full} | ${q.pronoun}`).join('\n');
+  } else {
+    textarea.value = "I ___ a student. | AM | I am a student. | I\nShe ___ a doctor. | IS | She is a doctor. | SHE\nThey ___ friends. | ARE | They are friends. | THEY";
+  }
+  
   modal.classList.add('active');
   if (S.screen === 'PLAYING') S.screen = 'PAUSED';
 }
@@ -568,12 +559,21 @@ function parseCustomSentences(text) {
     if (!line.trim()) continue;
     const parts = line.split('|').map(p => p.trim());
     if (parts.length >= 2) {
-      const text = parts[0];
-      const answer = parts[1].toUpperCase();
-      const full = parts[2] || text.replace('___', answer);
-      const pronoun = (parts[3] || 'CUSTOM').toUpperCase();
+      let qText = parts[0].replace(/[\s\u00A0\u2000-\u200B\uFEFF]+/g, ' ').trim();
+      const answer = parts[1].toUpperCase().trim();
+      let qFull = (parts[2] || '').replace(/[\s\u00A0\u2000-\u200B\uFEFF]+/g, ' ').trim();
+      const pronoun = (parts[3] || 'CUSTOM').toUpperCase().trim();
+      
       if (['AM', 'IS', 'ARE'].includes(answer)) {
-        parsed.push({ text, answer, full, pronoun });
+        qText = qText.split(/_{2,}/).join(' ___ ').replace(/\s+/g, ' ').trim();
+        
+        if (!qFull) {
+          qFull = qText.split('___').join(` ${answer} `).replace(/\s+/g, ' ').trim();
+        } else {
+          qFull = qFull.split(/_{2,}/).join(` ${answer} `).replace(/\s+/g, ' ').trim();
+        }
+        
+        parsed.push({ text: qText, answer, full: qFull, pronoun });
       }
     }
   }
