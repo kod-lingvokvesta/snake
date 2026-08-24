@@ -141,7 +141,7 @@
   .modal-content h2 { font-family: 'Press Start 2P', monospace; font-size: 18px; color: #5C7A52; margin-bottom: 20px; text-align: center; }
   .modal-content p { font-size: 18px; margin-bottom: 10px; line-height: 1.4; }
   .modal-content code { background: #d4c8b4; padding: 2px 8px; border-radius: 4px; font-size: 16px; }
-  .modal-content textarea { width: 100%; height: 200px; background: #0F380F; color: #9BBC0F; border: 2px solid #5C7A52; border-radius: 8px; padding: 15px; font-family: 'VT323', monospace; font-size: 18px; margin: 15px 0; resize: vertical; line-height: 1.3; }
+  .modal-content textarea { width: 100%; height: 200px; background: #0F380F; color: #9BBC0F; border: 2px solid #5C7A52; border-radius: 8px; padding: 15px; font-family: 'VT323', monospace; font-size: 18px; margin: 15px 0; resize: vertical; line-height: 1.3; user-select: text; -webkit-user-select: text; touch-action: auto; }
   .modal-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 10px; }
   .modal-btn { flex: 1; padding: 14px; border: none; border-radius: 8px; font-family: 'Press Start 2P', monospace; font-size: 12px; cursor: pointer; text-transform: uppercase; transition: transform 0.1s; }
   .modal-btn:active { transform: translateY(2px); }
@@ -193,7 +193,7 @@
         </div>
 
         <div class="footer">
-          <span class="footer-text">KOD_LINGVOKVESTA OS 2.0</span>
+          <span class="footer-text">KOD_LINGVOKVESTA OS 2.1</span>
           <div class="battery">
             <div class="battery-icon"><div class="battery-fill"></div></div>
           </div>
@@ -211,7 +211,6 @@
     <p>After the | sign, write TWO wrong words separated by a comma.</p>
     <p style="text-align: center;"><code>I [play] chess. | plays, playing</code></p>
     <p style="font-size: 16px; color: #7a6a5a;">Optional pronoun at the end: <code>She [is] a doctor. | am, are | SHE</code></p>
-    <p style="font-size: 16px; color: #7a6a5a;">You can add <strong>UNLIMITED</strong> lines!</p>
     <textarea id="customSentencesInput" placeholder="I [play] chess. | plays, playing&#10;He [reads] books. | read, reading"></textarea>
     <div class="modal-buttons">
       <button class="modal-btn btn-clear" id="clearCustomBtn">Clear</button>
@@ -224,9 +223,6 @@
 <script>
 'use strict';
 
-// ДЛЯ ПЕРЕКЛЮЧЕНИЯ ВЕРСИЙ:
-// true = Полная версия (с Teacher's Mode)
-// false = Демо-версия (только встроенные уровни)
 const IS_FULL_VERSION = true;
 
 const W = 420, H = 315, CELL = 21;
@@ -320,7 +316,13 @@ const Input = {
   handlers: {},
   init() {
     const keymap = { 'ArrowUp':'up','ArrowDown':'down','ArrowLeft':'left','ArrowRight':'right','z':'a','Z':'a','x':'b','X':'b','Enter':'start','Shift':'select',' ':'start' };
-    document.addEventListener('keydown', e => { if (e.repeat) return; const a = keymap[e.key]; if (a) { e.preventDefault(); this.trigger(a); } });
+    
+    document.addEventListener('keydown', e => {
+      if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+      if (e.repeat) return;
+      const a = keymap[e.key];
+      if (a) { e.preventDefault(); this.trigger(a); }
+    });
 
     document.querySelectorAll('[data-key]').forEach(btn => {
       const key = btn.dataset.key;
@@ -390,12 +392,11 @@ const Snake = {
   spawnFood() {
     const correctWord = S.currentQuestion.answer;
     
-    // Берем неправильные слова из вопроса, если их нет - генерируем стандартные для AM/IS/ARE
     let wrongWords = S.currentQuestion.wrongWords;
     if (!wrongWords || wrongWords.length < 2) {
       wrongWords = ['AM','IS','ARE'].filter(w => w !== correctWord);
     } else {
-      wrongWords = wrongWords.slice(0, 2); // Берем ровно 2 неправильных слова
+      wrongWords = wrongWords.slice(0, 2);
     }
     
     let words = [correctWord, wrongWords[0], wrongWords[1]];
@@ -403,11 +404,29 @@ const Snake = {
     
     const occ = new Set(); S.snake.forEach(s => occ.add(s.x+','+s.y));
     const validPositions = [];
-    for (let y = 0; y < GRID_ROWS; y++) { for (let x = 0; x < GRID_COLS-1; x++) { if (occ.has(x+','+y) || occ.has((x+1)+','+y)) continue; validPositions.push({x,y}); } }
+    // Обновлено: блоки теперь шириной в 3 клетки (x, x+1, x+2)
+    for (let y = 0; y < GRID_ROWS; y++) { 
+      for (let x = 0; x < GRID_COLS - 2; x++) { 
+        if (occ.has(x+','+y) || occ.has((x+1)+','+y) || occ.has((x+2)+','+y)) continue; 
+        validPositions.push({x,y}); 
+      } 
+    }
     for (let i = validPositions.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [validPositions[i], validPositions[j]] = [validPositions[j], validPositions[i]]; }
     const pos = [];
-    for (const p of validPositions) { if (pos.length >= 3) break; let overlap = false; for (const sp of pos) { if (sp.y === p.y && Math.abs(sp.x - p.x) <= 1) { overlap = true; break; } } if (!overlap) pos.push(p); }
-    while (pos.length < 3) { const rx = Math.floor(Math.random()*(GRID_COLS-1)); const ry = Math.floor(Math.random()*GRID_ROWS); if (!pos.some(sp => sp.x === rx && sp.y === ry)) pos.push({x:rx,y:ry}); }
+    for (const p of validPositions) {
+      if (pos.length >= 3) break;
+      let overlap = false;
+      // Обновлено: проверка наложения с учетом ширины 3
+      for (const sp of pos) {
+        if (sp.y === p.y && Math.abs(sp.x - p.x) <= 2) { overlap = true; break; }
+      }
+      if (!overlap) pos.push(p);
+    }
+    while (pos.length < 3) { 
+      const rx = Math.floor(Math.random()*(GRID_COLS-2)); 
+      const ry = Math.floor(Math.random()*GRID_ROWS); 
+      if (!pos.some(sp => sp.x === rx && sp.y === ry)) pos.push({x:rx,y:ry}); 
+    }
     S.food = pos.map((p,i) => ({ x: p.x, y: p.y, word: words[i], isCorrect: words[i] === S.currentQuestion.answer }));
   },
   setDir(dx, dy) { if (S.dir.x === -dx && S.dir.y === -dy) return; if (S.dir.x === dx && S.dir.y === dy) return; S.nextDir = {x:dx, y:dy}; },
@@ -418,7 +437,10 @@ const Snake = {
       const nh = {x: (h.x + S.dir.x + GRID_COLS) % GRID_COLS, y: (h.y + S.dir.y + GRID_ROWS) % GRID_ROWS};
       for (let i = 1; i < S.snake.length; i++) { if (S.snake[i].x === nh.x && S.snake[i].y === nh.y) { this.handleWrong(null); return; } }
       let eaten = null;
-      for (const f of S.food) { if (nh.y === f.y && (nh.x === f.x || nh.x === f.x+1)) { eaten = f; break; } }
+      // Обновлено: проверка столкновения с блоком шириной 3
+      for (const f of S.food) { 
+        if (nh.y === f.y && nh.x >= f.x && nh.x <= f.x + 2) { eaten = f; break; } 
+      }
       S.snake.unshift(nh);
       if (eaten) { Sound.play('eat'); this.checkAnswer(eaten); } else S.snake.pop();
       S.lastMove = ts;
@@ -454,7 +476,25 @@ const Snake = {
   drawHUD() { ptxt('SCORE:' + String(S.score).padStart(4,'0'), 18, 12, C_LCD_DARK, 11); let lv = ''; for (let i = 0; i < 3; i++) lv += i < S.lives ? '♥ ' : '♡ '; ptxt(lv, 180, 12, C_LCD_DARK, 11); ptxt('Q:' + S.caseNum + '/' + S.questions.length, W-90, 12, C_LCD_DARK, 10); },
   drawSentence() { if (!S.currentQuestion) return; drawDynamicText(S.currentQuestion.text, 30, C_LCD_DARK, 13); },
   drawGrid() { ctx.strokeStyle = C_LCD_DARK; ctx.lineWidth = 2; ctx.strokeRect(GRID_X-2, GRID_Y-2, GRID_COLS*CELL+4, GRID_ROWS*CELL+4); },
-  drawFood() { for (const f of S.food) { const x = GRID_X + f.x*CELL, y = GRID_Y + f.y*CELL, w = CELL*2, h = CELL; drawPixelBlock(x+1, y+1, w-2, h-2); ctx.fillStyle = C_LCD_BG; ctx.font = '11px "Press Start 2P", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(f.word || '?', x + w/2, y + h/2 + 1); } },
+  drawFood() { 
+    for (const f of S.food) { 
+      // Обновлено: ширина блока теперь CELL * 3 (63 пикселя)
+      const x = GRID_X + f.x*CELL, y = GRID_Y + f.y*CELL, w = CELL*3, h = CELL; 
+      drawPixelBlock(x+1, y+1, w-2, h-2); 
+      ctx.fillStyle = C_LCD_BG; 
+      
+      // Обновлено: Умный размер шрифта в зависимости от длины слова
+      const word = f.word || '?';
+      let fontSize = 11; // По умолчанию для коротких слов (до 4 букв)
+      if (word.length > 4) fontSize = 9;
+      if (word.length > 6) fontSize = 7;
+      if (word.length > 8) fontSize = 6; // На всякий случай для очень длинных
+      
+      ctx.font = `${fontSize}px "Press Start 2P", monospace`; 
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; 
+      ctx.fillText(word, x + w/2, y + h/2 + 1); 
+    } 
+  },
   drawSnake() { for (let i = 0; i < S.snake.length; i++) { const seg = S.snake[i]; const x = GRID_X + seg.x*CELL, y = GRID_Y + seg.y*CELL; if (i === 0) { ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x+1,y+1,CELL-2,CELL-2); ctx.fillStyle = C_LCD_BG; const dx = S.dir.x, dy = S.dir.y; if (dx !== 0) { ctx.fillRect(x+(dx>0?14:3), y+4, 4, 4); ctx.fillRect(x+(dx>0?14:3), y+13, 4, 4); } else { ctx.fillRect(x+4, y+(dy>0?14:3), 4, 4); ctx.fillRect(x+13, y+(dy>0?14:3), 4, 4); } } else { ctx.fillStyle = C_LCD_DARK; ctx.fillRect(x+2,y+2,CELL-4,CELL-4); ctx.fillStyle = C_LCD_BG; ctx.fillRect(x+4,y+4,CELL-8,CELL-8); } } },
   drawTimer() { const pct = Math.max(0, S.timer / S.maxTimer); const bw = W-36, bh = 5, bx = 18, by = 285; ctx.fillStyle = C_LCD_DARK; ctx.fillRect(bx-1,by-1,bw+2,bh+2); ctx.fillStyle = C_LCD_BG; ctx.fillRect(bx,by,bw,bh); ctx.fillStyle = C_LCD_DARK; ctx.fillRect(bx,by,bw*pct,bh); },
   draw() { clearScreen(); this.drawHUD(); this.drawSentence(); this.drawGrid(); this.drawFood(); this.drawSnake(); this.drawTimer(); },
@@ -580,7 +620,7 @@ function parseCustomSentences(text) {
   for (let line of lines) {
     if (!line.trim()) continue;
     
-    const parts = line.split('|').map(p => p.replace(/[\s\u00A0\u2000-\u200B\uFEFF]+/g, ' ').trim());
+    const parts = line.split('|').map(p => p.trim());
     if (parts.length === 0) continue;
 
     const sentencePart = parts[0];
@@ -588,23 +628,19 @@ function parseCustomSentences(text) {
     
     if (match) {
       const answer = match[1].toUpperCase().trim();
-      const qText = sentencePart.replace(/\[.*?\]/g, '___').replace(/\s+/g, ' ').trim();
-      const qFull = sentencePart.replace(/\[(.*?)\]/g, '$1').replace(/\s+/g, ' ').trim();
+      const qText = sentencePart.replace(/\s*\[.*?\]\s*/g, ' ___ ').replace(/\s+/g, ' ').trim();
+      const qFull = sentencePart.replace(/\s*\[(.*?)\]\s*/g, ' $1 ').replace(/\s+/g, ' ').trim();
       
-      // Извлекаем неправильные слова (из второй части, если она есть)
       let wrongWords = [];
       if (parts.length >= 2) {
         wrongWords = parts[1].split(',').map(w => w.toUpperCase().trim()).filter(w => w);
       }
       
-      // Извлекаем местоимение (из третьей части, если она есть)
       let pronoun = 'CUSTOM';
-      // Если частей 3 и более, и последняя часть не выглядит как список слов (не содержит запятых)
       if (parts.length >= 3) {
         pronoun = parts[parts.length - 1].toUpperCase().trim();
       }
       
-      // Если неправильных слов меньше 2, добавляем заглушки, чтобы игра не сломалась
       while (wrongWords.length < 2) {
         wrongWords.push(answer + (wrongWords.length === 0 ? 'S' : 'ED'));
       }
